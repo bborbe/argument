@@ -2,28 +2,28 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package flagjson_test
+package argument_test
 
 import (
-	"github.com/bborbe/flagjson"
+	"github.com/bborbe/argument"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Flag JSON", func() {
-	It("parse string", func() {
+var _ = Describe("ParseArgs", func() {
+	It("parse string from args parameter", func() {
 		var args struct {
 			Username string `arg:"user"`
 		}
-		err := flagjson.ParseArgs(&args, []string{"-user=Ben"})
+		err := argument.ParseArgs(&args, []string{"-user=Ben"})
 		Expect(err).NotTo(HaveOccurred())
 		Expect(args.Username).To(Equal("Ben"))
 	})
-	It("default string", func() {
+	It("parse string from default", func() {
 		var args struct {
 			Username string `arg:"user" default:"Ben"`
 		}
-		err := flagjson.ParseArgs(&args, []string{})
+		err := argument.ParseArgs(&args, []string{})
 		Expect(err).NotTo(HaveOccurred())
 		Expect(args.Username).To(Equal("Ben"))
 	})
@@ -31,7 +31,7 @@ var _ = Describe("Flag JSON", func() {
 		var args struct {
 			Age int `arg:"age"`
 		}
-		err := flagjson.ParseArgs(&args, []string{"-age=29"})
+		err := argument.ParseArgs(&args, []string{"-age=29"})
 		Expect(err).NotTo(HaveOccurred())
 		Expect(args.Age).To(Equal(29))
 	})
@@ -39,7 +39,7 @@ var _ = Describe("Flag JSON", func() {
 		var args struct {
 			Age int `arg:"age" default:"29"`
 		}
-		err := flagjson.ParseArgs(&args, []string{})
+		err := argument.ParseArgs(&args, []string{})
 		Expect(err).NotTo(HaveOccurred())
 		Expect(args.Age).To(Equal(29))
 	})
@@ -47,7 +47,7 @@ var _ = Describe("Flag JSON", func() {
 		var args struct {
 			Confirm bool `arg:"confirm"`
 		}
-		err := flagjson.ParseArgs(&args, []string{"-confirm=true"})
+		err := argument.ParseArgs(&args, []string{"-confirm=true"})
 		Expect(err).NotTo(HaveOccurred())
 		Expect(args.Confirm).To(BeTrue())
 	})
@@ -55,7 +55,7 @@ var _ = Describe("Flag JSON", func() {
 		var args struct {
 			Confirm bool `arg:"confirm"`
 		}
-		err := flagjson.ParseArgs(&args, []string{"-confirm=false"})
+		err := argument.ParseArgs(&args, []string{"-confirm=false"})
 		Expect(err).NotTo(HaveOccurred())
 		Expect(args.Confirm).To(BeFalse())
 	})
@@ -63,7 +63,7 @@ var _ = Describe("Flag JSON", func() {
 		var args struct {
 			Confirm bool `arg:"confirm" default:"true"`
 		}
-		err := flagjson.ParseArgs(&args, []string{})
+		err := argument.ParseArgs(&args, []string{})
 		Expect(err).NotTo(HaveOccurred())
 		Expect(args.Confirm).To(BeTrue())
 	})
@@ -71,7 +71,7 @@ var _ = Describe("Flag JSON", func() {
 		var args struct {
 			Confirm bool `arg:"confirm" default:"false"`
 		}
-		err := flagjson.ParseArgs(&args, []string{})
+		err := argument.ParseArgs(&args, []string{})
 		Expect(err).NotTo(HaveOccurred())
 		Expect(args.Confirm).To(BeFalse())
 	})

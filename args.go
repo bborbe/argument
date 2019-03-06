@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package flagjson
+package argument
 
 import (
-	"bytes"
-	"encoding/json"
 	"flag"
 	"os"
 	"reflect"
@@ -15,11 +13,16 @@ import (
 	"github.com/pkg/errors"
 )
 
-func Parse(data interface{}) error {
-	return ParseArgs(data, os.Args[1:])
+// ParseArgs parse os.Args[1:] into data.
+func ParseArgs(data interface{}, args []string) error {
+	values, err := argsToValues(data, args)
+	if err != nil {
+		return err
+	}
+	return fill(data, values)
 }
 
-func ParseArgs(data interface{}, args []string) error {
+func argsToValues(data interface{}, args []string) (map[string]interface{}, error) {
 	t := reflect.TypeOf(data)
 	switch t.Kind() {
 	case reflect.Ptr:
@@ -44,21 +47,14 @@ func ParseArgs(data interface{}, args []string) error {
 				defaultValue, _ := strconv.Atoi(defaultString)
 				values[field.Name] = flagSet.Int(argName, defaultValue, usage)
 			default:
-				return errors.Errorf("field %s with type %s is unsupported", field.Name, field.Type.Kind())
+				return nil, errors.Errorf("field %s with type %s is unsupported", field.Name, field.Type.Kind())
 			}
 		}
 		if err := flagSet.Parse(args); err != nil {
-			return err
+			return nil, err
 		}
-		buf := &bytes.Buffer{}
-		if err := json.NewEncoder(buf).Encode(values); err != nil {
-			return errors.Wrap(err, "encode json failed")
-		}
-		if err := json.NewDecoder(buf).Decode(data); err != nil {
-			return errors.Wrap(err, "decode json failed")
-		}
-		return nil
+		return values, nil
 	default:
-		return errors.Errorf("need pointer")
+		return nil, errors.Errorf("need pointer")
 	}
 }

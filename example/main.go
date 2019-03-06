@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/bborbe/flagjson"
+	"github.com/bborbe/argument"
 )
 
 func main() {
@@ -16,7 +16,7 @@ func main() {
 		Username string `arg:"username" default:"ben"`
 		Password string `arg:"password"`
 	}
-	if err := flagjson.Parse(&data); err != nil {
+	if err := argument.Parse(&data); err != nil {
 		log.Fatalf("parse args failed: %v", err)
 	}
 	fmt.Printf("username %s, password %s\n", data.Username, data.Password)

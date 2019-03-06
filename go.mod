@@ -1,4 +1,4 @@
-module github.com/bborbe/flagjson
+module github.com/bborbe/argument
 
 go 1.12
 

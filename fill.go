@@ -11,7 +11,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-func fill(data interface{}, values map[string]interface{}) error {
+// Fill the given map into the struct.
+func Fill(data interface{}, values map[string]interface{}) error {
 	buf := &bytes.Buffer{}
 	if err := json.NewEncoder(buf).Encode(values); err != nil {
 		return errors.Wrap(err, "encode json failed")

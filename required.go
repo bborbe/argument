@@ -1,3 +1,7 @@
+// Copyright (c) 2019 Benjamin Borbe All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package argument
 
 import (
@@ -8,7 +12,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-func validateRequired(data interface{}) error {
+// ValidateRequired fields are set and returns an error if not.
+func ValidateRequired(data interface{}) error {
 	e := reflect.ValueOf(data).Elem()
 	t := e.Type()
 	for i := 0; i < e.NumField(); i++ {

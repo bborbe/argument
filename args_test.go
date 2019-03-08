@@ -5,12 +5,19 @@
 package argument_test
 
 import (
+	"flag"
+	"os"
+	"time"
+
 	"github.com/bborbe/argument"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("ParseArgs", func() {
+	BeforeEach(func() {
+		flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError)
+	})
 	It("parse string from args parameter", func() {
 		var args struct {
 			Username string `arg:"user"`
@@ -43,6 +50,22 @@ var _ = Describe("ParseArgs", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(args.Age).To(Equal(29))
 	})
+	It("parse int64", func() {
+		var args struct {
+			Age int64 `arg:"age"`
+		}
+		err := argument.ParseArgs(&args, []string{"-age=29"})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(args.Age).To(Equal(int64(29)))
+	})
+	It("default int64", func() {
+		var args struct {
+			Age int64 `arg:"age" default:"29"`
+		}
+		err := argument.ParseArgs(&args, []string{})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(args.Age).To(Equal(int64(29)))
+	})
 	It("parse bool true", func() {
 		var args struct {
 			Confirm bool `arg:"confirm"`
@@ -74,5 +97,69 @@ var _ = Describe("ParseArgs", func() {
 		err := argument.ParseArgs(&args, []string{})
 		Expect(err).NotTo(HaveOccurred())
 		Expect(args.Confirm).To(BeFalse())
+	})
+	It("parse duration", func() {
+		var args struct {
+			Wait time.Duration `arg:"wait"`
+		}
+		err := argument.ParseArgs(&args, []string{"-wait=1m"})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(args.Wait).To(Equal(time.Minute))
+	})
+	It("default duration", func() {
+		var args struct {
+			Wait time.Duration `arg:"wait" default:"1m"`
+		}
+		err := argument.ParseArgs(&args, []string{})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(args.Wait).To(Equal(time.Minute))
+	})
+	It("parse float64", func() {
+		var args struct {
+			Age float64 `arg:"age"`
+		}
+		err := argument.ParseArgs(&args, []string{"-age=29"})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(args.Age).To(Equal(float64(29)))
+	})
+	It("default float64", func() {
+		var args struct {
+			Age float64 `arg:"age" default:"29"`
+		}
+		err := argument.ParseArgs(&args, []string{})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(args.Age).To(Equal(float64(29)))
+	})
+	It("parse uint", func() {
+		var args struct {
+			Age uint `arg:"age"`
+		}
+		err := argument.ParseArgs(&args, []string{"-age=29"})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(args.Age).To(Equal(uint(29)))
+	})
+	It("default uint", func() {
+		var args struct {
+			Age uint `arg:"age" default:"29"`
+		}
+		err := argument.ParseArgs(&args, []string{})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(args.Age).To(Equal(uint(29)))
+	})
+	It("parse uint64", func() {
+		var args struct {
+			Age uint64 `arg:"age"`
+		}
+		err := argument.ParseArgs(&args, []string{"-age=29"})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(args.Age).To(Equal(uint64(29)))
+	})
+	It("default uint64", func() {
+		var args struct {
+			Age uint64 `arg:"age" default:"29"`
+		}
+		err := argument.ParseArgs(&args, []string{})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(args.Age).To(Equal(uint64(29)))
 	})
 })

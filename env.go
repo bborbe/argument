@@ -7,17 +7,18 @@ package argument
 import (
 	"reflect"
 	"strconv"
+	"time"
 
 	"github.com/pkg/errors"
 )
 
-// ParseEnv parse the os.Environ() to data struct.
+// ParseEnv into the given struct.
 func ParseEnv(data interface{}, environ []string) error {
 	values, err := envToValues(data, environ)
 	if err != nil {
 		return err
 	}
-	return fill(data, values)
+	return Fill(data, values)
 }
 
 func envToValues(data interface{}, environ []string) (map[string]interface{}, error) {
@@ -30,43 +31,64 @@ func envToValues(data interface{}, environ []string) (map[string]interface{}, er
 			}
 		}
 	}
-	t := reflect.TypeOf(data)
-	switch t.Kind() {
-	case reflect.Ptr:
-		elem := t.Elem()
-		values := make(map[string]interface{})
-		for i := 0; i < elem.NumField(); i++ {
-			field := elem.Field(i)
-			argName, ok := field.Tag.Lookup("env")
+	values := make(map[string]interface{})
+	e := reflect.ValueOf(data).Elem()
+	t := e.Type()
+	for i := 0; i < e.NumField(); i++ {
+		tf := t.Field(i)
+		ef := e.Field(i)
+		argName, ok := tf.Tag.Lookup("env")
+		if !ok {
+			continue
+		}
+		value, ok := envValues[argName]
+		if !ok {
+			value, ok = tf.Tag.Lookup("default")
 			if !ok {
 				continue
 			}
-			value, ok := envValues[argName]
-			if !ok {
-				value, ok = field.Tag.Lookup("default")
-				if !ok {
-					continue
-				}
-			}
-			switch field.Type.Kind() {
-			case reflect.String:
-				values[field.Name] = value
-			case reflect.Bool:
-				values[field.Name], err = strconv.ParseBool(value)
-				if err != nil {
-					return nil, errors.Errorf("parse field %s as bool failed: %v", field.Name, err)
-				}
-			case reflect.Int:
-				values[field.Name], err = strconv.Atoi(value)
-				if err != nil {
-					return nil, errors.Errorf("parse field %s as int failed: %v", field.Name, err)
-				}
-			default:
-				return nil, errors.Errorf("field %s with type %s is unsupported", field.Name, field.Type.Kind())
-			}
 		}
-		return values, nil
-	default:
-		return nil, errors.Errorf("need pointer")
+		switch ef.Interface().(type) {
+		case string:
+			values[tf.Name] = value
+		case bool:
+			values[tf.Name], err = strconv.ParseBool(value)
+			if err != nil {
+				return nil, errors.Errorf("parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+			}
+		case int:
+			values[tf.Name], err = strconv.Atoi(value)
+			if err != nil {
+				return nil, errors.Errorf("parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+			}
+		case int64:
+			values[tf.Name], err = strconv.ParseInt(value, 10, 0)
+			if err != nil {
+				return nil, errors.Errorf("parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+			}
+		case uint:
+			values[tf.Name], err = strconv.ParseUint(value, 10, 0)
+			if err != nil {
+				return nil, errors.Errorf("parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+			}
+		case uint64:
+			values[tf.Name], err = strconv.ParseUint(value, 10, 0)
+			if err != nil {
+				return nil, errors.Errorf("parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+			}
+		case float64:
+			values[tf.Name], err = strconv.ParseFloat(value, 64)
+			if err != nil {
+				return nil, errors.Errorf("parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+			}
+		case time.Duration:
+			values[tf.Name], err = time.ParseDuration(value)
+			if err != nil {
+				return nil, errors.Errorf("parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+			}
+		default:
+			return nil, errors.Errorf("field %s with type %T is unsupported", tf.Name, ef.Interface())
+		}
 	}
+	return values, nil
 }

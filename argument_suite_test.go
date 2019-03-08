@@ -11,7 +11,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestFlagjson(t *testing.T) {
+func TestArgument(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Flagjson Suite")
+	RunSpecs(t, "Argument Suite")
 }

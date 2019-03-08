@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-// Parse env and flag to the given struct.
+// Parse combines all functionality. It parse env args, fills it the struct, print all arguments and validate required fields are set.
 func Parse(data interface{}) error {
 	argsValues, err := argsToValues(data, os.Args[1:])
 	if err != nil {
@@ -18,13 +18,13 @@ func Parse(data interface{}) error {
 	if err != nil {
 		return err
 	}
-	if err := fill(data, mergeValues(argsValues, envValues)); err != nil {
+	if err := Fill(data, mergeValues(argsValues, envValues)); err != nil {
 		return err
 	}
 	if err := print(data); err != nil {
 		return err
 	}
-	if err := validateRequired(data); err != nil {
+	if err := ValidateRequired(data); err != nil {
 		return err
 	}
 	return nil

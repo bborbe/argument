@@ -5,6 +5,7 @@
 package argument_test
 
 import (
+	"flag"
 	"os"
 
 	"github.com/bborbe/argument"
@@ -15,6 +16,7 @@ import (
 
 var _ = Describe("Parse", func() {
 	BeforeEach(func() {
+		flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 		os.Args = []string{"go"}
 		os.Clearenv()
 	})

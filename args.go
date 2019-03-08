@@ -8,51 +8,63 @@ import (
 	"flag"
 	"reflect"
 	"strconv"
+	"time"
 
 	"github.com/pkg/errors"
 )
 
-// ParseArgs parse os.Args[1:] into data.
+// ParseArgs into the given struct.
 func ParseArgs(data interface{}, args []string) error {
 	values, err := argsToValues(data, args)
 	if err != nil {
 		return err
 	}
-	return fill(data, values)
+	return Fill(data, values)
 }
 
 func argsToValues(data interface{}, args []string) (map[string]interface{}, error) {
-	t := reflect.TypeOf(data)
-	switch t.Kind() {
-	case reflect.Ptr:
-		elem := t.Elem()
-		values := make(map[string]interface{})
-		for i := 0; i < elem.NumField(); i++ {
-			field := elem.Field(i)
-			argName, ok := field.Tag.Lookup("arg")
-			if !ok {
-				continue
-			}
-			defaultString := field.Tag.Get("default")
-			usage := field.Tag.Get("usage")
-			switch field.Type.Kind() {
-			case reflect.String:
-				values[field.Name] = flag.CommandLine.String(argName, defaultString, usage)
-			case reflect.Bool:
-				defaultValue, _ := strconv.ParseBool(defaultString)
-				values[field.Name] = flag.CommandLine.Bool(argName, defaultValue, usage)
-			case reflect.Int:
-				defaultValue, _ := strconv.Atoi(defaultString)
-				values[field.Name] = flag.CommandLine.Int(argName, defaultValue, usage)
-			default:
-				return nil, errors.Errorf("field %s with type %s is unsupported", field.Name, field.Type.Kind())
-			}
+	e := reflect.ValueOf(data).Elem()
+	t := e.Type()
+	values := make(map[string]interface{})
+	for i := 0; i < e.NumField(); i++ {
+		tf := t.Field(i)
+		ef := e.Field(i)
+		argName, ok := tf.Tag.Lookup("arg")
+		if !ok {
+			continue
 		}
-		if err := flag.CommandLine.Parse(args); err != nil {
-			return nil, err
+		defaultString := tf.Tag.Get("default")
+		usage := tf.Tag.Get("usage")
+		switch ef.Interface().(type) {
+		case string:
+			values[tf.Name] = flag.CommandLine.String(argName, defaultString, usage)
+		case bool:
+			defaultValue, _ := strconv.ParseBool(defaultString)
+			values[tf.Name] = flag.CommandLine.Bool(argName, defaultValue, usage)
+		case int:
+			defaultValue, _ := strconv.Atoi(defaultString)
+			values[tf.Name] = flag.CommandLine.Int(argName, defaultValue, usage)
+		case int64:
+			defaultValue, _ := strconv.ParseInt(defaultString, 10, 0)
+			values[tf.Name] = flag.CommandLine.Int64(argName, defaultValue, usage)
+		case uint:
+			defaultValue, _ := strconv.ParseUint(defaultString, 10, 0)
+			values[tf.Name] = flag.CommandLine.Uint(argName, uint(defaultValue), usage)
+		case uint64:
+			defaultValue, _ := strconv.ParseUint(defaultString, 10, 0)
+			values[tf.Name] = flag.CommandLine.Uint64(argName, defaultValue, usage)
+		case float64:
+			defaultValue, _ := strconv.ParseFloat(defaultString, 64)
+			values[tf.Name] = flag.CommandLine.Float64(argName, defaultValue, usage)
+		case time.Duration:
+			defaultValue, _ := time.ParseDuration(defaultString)
+			values[tf.Name] = flag.CommandLine.Duration(argName, defaultValue, usage)
+		default:
+			return nil, errors.Errorf("field %s with type %T is unsupported", tf.Name, ef.Interface())
 		}
-		return values, nil
-	default:
-		return nil, errors.Errorf("need pointer")
 	}
+	if err := flag.CommandLine.Parse(args); err != nil {
+		return nil, err
+	}
+	return values, nil
 }

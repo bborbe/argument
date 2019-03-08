@@ -18,7 +18,16 @@ func Parse(data interface{}) error {
 	if err != nil {
 		return err
 	}
-	return fill(data, mergeValues(argsValues, envValues))
+	if err := fill(data, mergeValues(argsValues, envValues)); err != nil {
+		return err
+	}
+	if err := print(data); err != nil {
+		return err
+	}
+	if err := validateRequired(data); err != nil {
+		return err
+	}
+	return nil
 }
 
 func mergeValues(list ...map[string]interface{}) map[string]interface{} {

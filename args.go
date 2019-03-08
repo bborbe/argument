@@ -6,7 +6,6 @@ package argument
 
 import (
 	"flag"
-	"os"
 	"reflect"
 	"strconv"
 
@@ -28,7 +27,6 @@ func argsToValues(data interface{}, args []string) (map[string]interface{}, erro
 	case reflect.Ptr:
 		elem := t.Elem()
 		values := make(map[string]interface{})
-		flagSet := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 		for i := 0; i < elem.NumField(); i++ {
 			field := elem.Field(i)
 			argName, ok := field.Tag.Lookup("arg")
@@ -39,18 +37,18 @@ func argsToValues(data interface{}, args []string) (map[string]interface{}, erro
 			usage := field.Tag.Get("usage")
 			switch field.Type.Kind() {
 			case reflect.String:
-				values[field.Name] = flagSet.String(argName, defaultString, usage)
+				values[field.Name] = flag.CommandLine.String(argName, defaultString, usage)
 			case reflect.Bool:
 				defaultValue, _ := strconv.ParseBool(defaultString)
-				values[field.Name] = flagSet.Bool(argName, defaultValue, usage)
+				values[field.Name] = flag.CommandLine.Bool(argName, defaultValue, usage)
 			case reflect.Int:
 				defaultValue, _ := strconv.Atoi(defaultString)
-				values[field.Name] = flagSet.Int(argName, defaultValue, usage)
+				values[field.Name] = flag.CommandLine.Int(argName, defaultValue, usage)
 			default:
 				return nil, errors.Errorf("field %s with type %s is unsupported", field.Name, field.Type.Kind())
 			}
 		}
-		if err := flagSet.Parse(args); err != nil {
+		if err := flag.CommandLine.Parse(args); err != nil {
 			return nil, err
 		}
 		return values, nil

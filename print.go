@@ -11,7 +11,7 @@ import (
 	"github.com/golang/glog"
 )
 
-func print(data interface{}) error {
+func Print(data interface{}) error {
 	e := reflect.ValueOf(data).Elem()
 	t := e.Type()
 	for i := 0; i < e.NumField(); i++ {

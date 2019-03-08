@@ -16,7 +16,7 @@ import (
 
 var _ = Describe("ParseArgs", func() {
 	BeforeEach(func() {
-		flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError)
+		flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ContinueOnError)
 	})
 	It("parse string from args parameter", func() {
 		var args struct {
@@ -41,6 +41,28 @@ var _ = Describe("ParseArgs", func() {
 		err := argument.ParseArgs(&args, []string{"-age=29"})
 		Expect(err).NotTo(HaveOccurred())
 		Expect(args.Age).To(Equal(29))
+	})
+	It("returns an error if parse int fails", func() {
+		var args struct {
+			Age int `arg:"age"`
+		}
+		err := argument.ParseArgs(&args, []string{"-age=abc"})
+		Expect(err).To(HaveOccurred())
+	})
+	It("return error if parse fails", func() {
+		var args struct {
+			Age int `arg:"age"`
+		}
+		err := argument.ParseArgs(&args, []string{"-age=abc"})
+		Expect(err).To(HaveOccurred())
+	})
+	It("skip fields without tag", func() {
+		var args struct {
+			Age int
+		}
+		err := argument.ParseArgs(&args, []string{})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(args.Age).To(Equal(0))
 	})
 	It("default int", func() {
 		var args struct {
@@ -97,6 +119,13 @@ var _ = Describe("ParseArgs", func() {
 		err := argument.ParseArgs(&args, []string{})
 		Expect(err).NotTo(HaveOccurred())
 		Expect(args.Confirm).To(BeFalse())
+	})
+	It("returns an error if parse bool fails", func() {
+		var args struct {
+			Confirm bool `arg:"confirm"`
+		}
+		err := argument.ParseArgs(&args, []string{"-confirm=banana"})
+		Expect(err).To(HaveOccurred())
 	})
 	It("parse duration", func() {
 		var args struct {
@@ -161,5 +190,12 @@ var _ = Describe("ParseArgs", func() {
 		err := argument.ParseArgs(&args, []string{})
 		Expect(err).NotTo(HaveOccurred())
 		Expect(args.Age).To(Equal(uint64(29)))
+	})
+	It("returns an error if type is not supported", func() {
+		var args struct {
+			Age interface{} `arg:"age" default:"29"`
+		}
+		err := argument.ParseArgs(&args, []string{})
+		Expect(err).To(HaveOccurred())
 	})
 })

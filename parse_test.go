@@ -5,6 +5,7 @@
 package argument_test
 
 import (
+	"bytes"
 	"flag"
 	"os"
 
@@ -16,6 +17,7 @@ import (
 
 var _ = Describe("Parse", func() {
 	BeforeEach(func() {
+		flag.CommandLine.SetOutput(&bytes.Buffer{})
 		flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 		os.Args = []string{"go"}
 		os.Clearenv()
@@ -55,5 +57,14 @@ var _ = Describe("Parse", func() {
 		err := argument.Parse(&args)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(args.Username).To(Equal("Env"))
+	})
+	It("use flag if defined", func() {
+		var args struct {
+			Username string `arg:"user" env:"user" default:"Default"`
+		}
+		os.Args = []string{"go", "-user=Arg"}
+		err := argument.Parse(&args)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(args.Username).To(Equal("Arg"))
 	})
 })

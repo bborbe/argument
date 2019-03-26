@@ -5,6 +5,7 @@
 package argument_test
 
 import (
+	"bytes"
 	"flag"
 	"os"
 	"time"
@@ -16,6 +17,7 @@ import (
 
 var _ = Describe("ParseArgs", func() {
 	BeforeEach(func() {
+		flag.CommandLine.SetOutput(&bytes.Buffer{})
 		flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ContinueOnError)
 	})
 	It("parse string from args parameter", func() {

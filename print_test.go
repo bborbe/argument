@@ -6,10 +6,11 @@ package argument_test
 
 import (
 	"bytes"
+	"log"
+
 	"github.com/bborbe/argument"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"log"
 )
 
 var _ = Describe("Print", func() {

@@ -193,4 +193,15 @@ var _ = Describe("Required", func() {
 		Expect(err).To(HaveOccurred())
 		Expect(err.Error()).To(Equal("field Banana with type <nil> is unsupported"))
 	})
+	It("returns errors if second field is invalid", func() {
+		args := struct {
+			Username string `required:"true"`
+			Password string `required:"true"`
+		}{
+			Username: "Ben",
+			Password: "",
+		}
+		err := argument.ValidateRequired(&args)
+		Expect(err).NotTo(BeNil())
+	})
 })

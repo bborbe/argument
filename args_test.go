@@ -20,6 +20,19 @@ var _ = Describe("ParseArgs", func() {
 		flag.CommandLine.SetOutput(&bytes.Buffer{})
 		flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ContinueOnError)
 	})
+	It("parse empty struct", func() {
+		var args struct {
+		}
+		err := argument.ParseArgs(&args, []string{})
+		Expect(err).To(BeNil())
+	})
+	It("ignore private fields", func() {
+		var args struct {
+			private string
+		}
+		err := argument.ParseArgs(&args, []string{})
+		Expect(err).To(BeNil())
+	})
 	It("parse string from args parameter", func() {
 		var args struct {
 			Username string `arg:"user"`

@@ -37,4 +37,4 @@ errcheck:
 
 addlicense:
 	go get github.com/google/addlicense
-	addlicense -c "Benjamin Borbe" -y 2019 -l bsd ./*.go ./example/*.go
+	addlicense -c "Benjamin Borbe" -y 2020 -l bsd ./*.go ./example/*.go

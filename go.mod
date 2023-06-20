@@ -1,6 +1,6 @@
 module github.com/bborbe/argument
 
-go 1.19
+go 1.20
 
 require (
 	github.com/google/addlicense v1.1.1

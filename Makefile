@@ -5,19 +5,20 @@ precommit: ensure format generate test check addlicense
 	@echo "ready to commit"
 
 ensure:
+	go mod tidy
 	go mod verify
 	go mod vendor
 
 format:
 	find . -type f -name '*.go' -not -path './vendor/*' -exec gofmt -w "{}" +
-	find . -type f -name '*.go' -not -path './vendor/*' -exec go run -mod=vendor github.com/incu6us/goimports-reviser -project-name github.com/bborbe/run -file-path "{}" \;
+	find . -type f -name '*.go' -not -path './vendor/*' -exec go run -mod=vendor github.com/incu6us/goimports-reviser -project-name github.com/bborbe/argument -file-path "{}" \;
 
 generate:
 	rm -rf mocks avro
 	go generate -mod=vendor ./...
 
 test:
-	go test -mod=vendor -p=1 -cover -race $(shell go list -mod=vendor ./... | grep -v /vendor/)
+	go test -mod=vendor -p=$${GO_TEST_PARALLEL:-1} -cover -race $(shell go list -mod=vendor ./... | grep -v /vendor/)
 
 check: lint vet errcheck
 
@@ -31,4 +32,4 @@ errcheck:
 	go run -mod=vendor github.com/kisielk/errcheck -ignore '(Close|Write|Fprint)' $(shell go list -mod=vendor ./... | grep -v /vendor/)
 
 addlicense:
-	go run -mod=vendor github.com/google/addlicense -c "Benjamin Borbe" -y 2023 -l bsd ./*.go
+	go run -mod=vendor github.com/google/addlicense -c "Benjamin Borbe" -y $$(date +'%Y') -l bsd $$(find . -name "*.go" -not -path './vendor/*')

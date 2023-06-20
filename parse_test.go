@@ -9,9 +9,10 @@ import (
 	"flag"
 	"os"
 
-	"github.com/bborbe/argument"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
+	"github.com/bborbe/argument"
 )
 
 var _ = Describe("Parse", func() {
@@ -20,6 +21,53 @@ var _ = Describe("Parse", func() {
 		flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 		os.Args = []string{"go"}
 		os.Clearenv()
+	})
+	It("parse float64 from arg default", func() {
+		var args struct {
+			Amount float64 `arg:"amount" env:"Amount"`
+		}
+		os.Args = []string{"go"}
+		err := argument.Parse(&args)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(args.Amount).To(Equal(float64(0)))
+	})
+	It("parse float64 from arg", func() {
+		var args struct {
+			Amount float64 `arg:"amount" env:"Amount"`
+		}
+		os.Args = []string{"go", "-amount=23.5"}
+		err := argument.Parse(&args)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(args.Amount).To(Equal(23.5))
+	})
+	It("parse *float64 from arg", func() {
+		var args struct {
+			Amount *float64 `arg:"amount" env:"Amount"`
+		}
+		os.Args = []string{"go", "-amount=23.5"}
+		err := argument.Parse(&args)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(args.Amount).NotTo(BeNil())
+		Expect(*args.Amount).To(Equal(23.5))
+	})
+	It("parse *float64 from arg", func() {
+		var args struct {
+			Amount *float64 `arg:"amount" env:"Amount"`
+		}
+		os.Args = []string{"go", "-amount=23.5"}
+		err := argument.Parse(&args)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(args.Amount).NotTo(BeNil())
+		Expect(*args.Amount).To(Equal(23.5))
+	})
+	It("parse *float64 from arg default", func() {
+		var args struct {
+			Amount *float64 `arg:"amount" env:"Amount"`
+		}
+		os.Args = []string{"go"}
+		err := argument.Parse(&args)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(args.Amount).To(BeNil())
 	})
 	It("parse string from arg", func() {
 		var args struct {

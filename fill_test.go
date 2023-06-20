@@ -5,9 +5,10 @@
 package argument_test
 
 import (
-	"github.com/bborbe/argument"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
+	"github.com/bborbe/argument"
 )
 
 var _ = Describe("Fill", func() {

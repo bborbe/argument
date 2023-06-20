@@ -7,9 +7,10 @@ package argument_test
 import (
 	"time"
 
-	"github.com/bborbe/argument"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
+	"github.com/bborbe/argument"
 )
 
 var _ = Describe("Required", func() {
@@ -160,6 +161,26 @@ var _ = Describe("Required", func() {
 		err := argument.ValidateRequired(&args)
 		Expect(err).NotTo(HaveOccurred())
 	})
+	It("returns error if required *float64 is empty", func() {
+		args := struct {
+			Age *float64 `required:"true"`
+		}{
+			Age: nil,
+		}
+		err := argument.ValidateRequired(&args)
+		Expect(err).To(HaveOccurred())
+	})
+	It("returns no error if required *float64 is not empty", func() {
+		v := float64(123)
+		args := struct {
+			Age *float64 `required:"true"`
+		}{
+			Age: &v,
+		}
+		err := argument.ValidateRequired(&args)
+		Expect(err).NotTo(HaveOccurred())
+	})
+
 	It("returns error if required time.Duration is empty", func() {
 		args := struct {
 			Age time.Duration `required:"true"`

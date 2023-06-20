@@ -10,9 +10,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/bborbe/argument"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
+	"github.com/bborbe/argument"
 )
 
 var _ = Describe("ParseArgs", func() {

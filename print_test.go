@@ -16,9 +16,12 @@ import (
 
 var _ = Describe("Print", func() {
 	type app struct {
-		Username string
-		Password string `display:"length"`
-		Debug    bool   `display:"hidden"`
+		Username      string
+		Password      string `display:"length"`
+		Debug         bool   `display:"hidden"`
+		Float64       float64
+		Float64Ptr    *float64
+		Float64PtrNil *float64
 	}
 	var buf *bytes.Buffer
 	var args app
@@ -27,9 +30,12 @@ var _ = Describe("Print", func() {
 		log.SetOutput(buf)
 		log.SetFlags(0)
 		args = app{
-			Username: "Ben",
-			Password: "S3CR3T",
-			Debug:    true,
+			Username:      "Ben",
+			Password:      "S3CR3T",
+			Debug:         true,
+			Float64:       13.37,
+			Float64Ptr:    float64Ptr(4.2),
+			Float64PtrNil: nil,
 		}
 	})
 	It("print without error", func() {
@@ -39,6 +45,15 @@ var _ = Describe("Print", func() {
 	It("foo", func() {
 		err := argument.Print(&args)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(buf.String()).To(Equal("Argument: Username 'Ben'\nArgument: Password length 6\n"))
+		Expect(buf.String()).To(Equal(`Argument: Username 'Ben'
+Argument: Password length 6
+Argument: Float64 '13.37'
+Argument: Float64Ptr '4.2'
+Argument: Float64PtrNil <nil>
+`))
 	})
 })
+
+func float64Ptr(value float64) *float64 {
+	return &value
+}

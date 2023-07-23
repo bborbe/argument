@@ -62,6 +62,9 @@ func argsToValues(data interface{}, args []string) (map[string]interface{}, erro
 				values[tf.Name] = defaultValue
 			}
 			flag.CommandLine.Func(argName, usage, func(s string) error {
+				if s == "" {
+					return nil
+				}
 				v, err := strconv.ParseFloat(s, 64)
 				if err != nil {
 					return err

@@ -167,6 +167,14 @@ var _ = Describe("ParseArgs", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(args.Age).To(Equal(float64(29)))
 	})
+	It("parse *float64", func() {
+		var args struct {
+			Age *float64 `arg:"age"`
+		}
+		err := argument.ParseArgs(&args, []string{"-age=29"})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(*args.Age).To(Equal(float64(29)))
+	})
 	It("default float64", func() {
 		var args struct {
 			Age float64 `arg:"age" default:"29"`
@@ -175,6 +183,23 @@ var _ = Describe("ParseArgs", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(args.Age).To(Equal(float64(29)))
 	})
+	It("parse *float64", func() {
+		var args struct {
+			Age *float64 `arg:"age"`
+		}
+		err := argument.ParseArgs(&args, []string{"-age="})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(args.Age).To(BeNil())
+	})
+	It("default *float64", func() {
+		var args struct {
+			Age *float64 `arg:"age" default:"29"`
+		}
+		err := argument.ParseArgs(&args, []string{})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(*args.Age).To(Equal(float64(29)))
+	})
+
 	It("parse uint", func() {
 		var args struct {
 			Age uint `arg:"age"`

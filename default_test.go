@@ -90,4 +90,22 @@ var _ = Describe("DefaultValues", func() {
 		Expect(err).To(HaveOccurred())
 		Expect(data).To(BeNil())
 	})
+	It("default int32", func() {
+		var args struct {
+			Age int32 `default:"29"`
+		}
+		data, err := argument.DefaultValues(&args)
+		Expect(err).NotTo(HaveOccurred())
+		value, ok := data["Age"]
+		Expect(ok).To(BeTrue())
+		Expect(value).To(Equal(int32(29)))
+	})
+	It("return error if parse int32 fails", func() {
+		var args struct {
+			Age int32 `default:"age"`
+		}
+		data, err := argument.DefaultValues(&args)
+		Expect(err).To(HaveOccurred())
+		Expect(data).To(BeNil())
+	})
 })

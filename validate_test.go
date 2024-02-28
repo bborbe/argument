@@ -225,4 +225,22 @@ var _ = Describe("Required", func() {
 		err := argument.ValidateRequired(&args)
 		Expect(err).NotTo(BeNil())
 	})
+	It("returns error if required int32 is empty", func() {
+		args := struct {
+			Age int32 `required:"true"`
+		}{
+			Age: 0,
+		}
+		err := argument.ValidateRequired(&args)
+		Expect(err).To(HaveOccurred())
+	})
+	It("returns no error if required int32 is not empty", func() {
+		args := struct {
+			Age int32 `required:"true"`
+		}{
+			Age: 29,
+		}
+		err := argument.ValidateRequired(&args)
+		Expect(err).NotTo(HaveOccurred())
+	})
 })

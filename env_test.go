@@ -150,4 +150,19 @@ var _ = Describe("ParseEnv", func() {
 		err := argument.ParseEnv(&args, []string{"age=abc"})
 		Expect(err).NotTo(BeNil())
 	})
+	It("parse int32", func() {
+		var args struct {
+			Age int32 `env:"age"`
+		}
+		err := argument.ParseEnv(&args, []string{"age=29"})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(args.Age).To(Equal(int32(29)))
+	})
+	It("return error if parse int32 fails", func() {
+		var args struct {
+			Age int32 `env:"age"`
+		}
+		err := argument.ParseEnv(&args, []string{"age=abc"})
+		Expect(err).To(HaveOccurred())
+	})
 })

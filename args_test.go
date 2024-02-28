@@ -239,4 +239,20 @@ var _ = Describe("ParseArgs", func() {
 		err := argument.ParseArgs(&args, []string{})
 		Expect(err).To(HaveOccurred())
 	})
+	It("parse int32", func() {
+		var args struct {
+			Age int32 `arg:"age"`
+		}
+		err := argument.ParseArgs(&args, []string{"-age=29"})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(args.Age).To(Equal(int32(29)))
+	})
+	It("default int32", func() {
+		var args struct {
+			Age int32 `arg:"age" default:"29"`
+		}
+		err := argument.ParseArgs(&args, []string{})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(args.Age).To(Equal(int32(29)))
+	})
 })

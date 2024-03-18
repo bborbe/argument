@@ -13,7 +13,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/bborbe/argument"
+	argument "github.com/bborbe/argument/v2"
 )
 
 var _ = Describe("Parse", func() {

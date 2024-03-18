@@ -1,4 +1,4 @@
-module github.com/bborbe/argument
+module github.com/bborbe/argument/v2
 
 go 1.21.8
 

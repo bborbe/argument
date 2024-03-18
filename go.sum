@@ -1,5 +1,7 @@
 github.com/bborbe/errors v1.2.0 h1:FjCqr4HgXEOVviQieYqBCVOoMoHBqE0kQuc0IgZ/c/4=
 github.com/bborbe/errors v1.2.0/go.mod h1:KO4z2P4U3JGlt0b8uJvXuqerKsCRnGJJL6opeOuD5Ys=
+github.com/bborbe/time v1.1.0 h1:9UkerloR+OEqr6L2W0jhNLEIYKsQ9uAumEy0aQPZhtU=
+github.com/bborbe/time v1.1.0/go.mod h1:Qh2IY17rp3dBhwzrzbVTQnNX0mAjosPJTd/pMz4da+k=
 github.com/bborbe/validation v1.0.0 h1:sWhA876v9juv6mRKHZduge13KU0LibjDF6yhJ5jQF98=
 github.com/bborbe/validation v1.0.0/go.mod h1:Uik7VOaHf8GVYDrFd2ypNnQSkvLOUUr+1QwLDac8gxU=
 github.com/bmatcuk/doublestar/v4 v4.0.2/go.mod h1:xBQ8jztBU6kakFMg+8WGxn0c6z1fTSPVIjEY1Wr7jzc=

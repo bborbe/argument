@@ -2,8 +2,6 @@ module github.com/bborbe/argument
 
 go 1.21.8
 
-replace github.com/bborbe/time => ../time
-
 require (
 	github.com/bborbe/errors v1.2.0
 	github.com/bborbe/time v1.1.0

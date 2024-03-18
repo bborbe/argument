@@ -11,7 +11,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	argument "github.com/bborbe/argument/v2"
+	"github.com/bborbe/argument/v2"
 )
 
 var _ = Describe("ParseEnv", func() {

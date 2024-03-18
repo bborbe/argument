@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"log"
 
-	argument "github.com/bborbe/argument/v2"
+	"github.com/bborbe/argument/v2"
 )
 
 func main() {

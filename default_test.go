@@ -6,6 +6,7 @@ package argument_test
 
 import (
 	"context"
+	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -113,5 +114,25 @@ var _ = Describe("DefaultValues", func() {
 		data, err := argument.DefaultValues(ctx, &args)
 		Expect(err).To(HaveOccurred())
 		Expect(data).To(BeNil())
+	})
+	It("default duration", func() {
+		var args struct {
+			Age time.Duration `default:"1h"`
+		}
+		data, err := argument.DefaultValues(ctx, &args)
+		Expect(err).NotTo(HaveOccurred())
+		value, ok := data["Age"]
+		Expect(ok).To(BeTrue())
+		Expect(value).To(Equal(time.Hour))
+	})
+	It("default duration day", func() {
+		var args struct {
+			Age time.Duration `default:"7d"`
+		}
+		data, err := argument.DefaultValues(ctx, &args)
+		Expect(err).NotTo(HaveOccurred())
+		value, ok := data["Age"]
+		Expect(ok).To(BeTrue())
+		Expect(value).To(Equal(7 * 24 * time.Hour))
 	})
 })

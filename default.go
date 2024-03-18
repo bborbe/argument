@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/bborbe/errors"
+	libtime "github.com/bborbe/time"
 )
 
 // DefaultValues returns all default values of the given struct.
@@ -71,10 +72,11 @@ func DefaultValues(ctx context.Context, data interface{}) (map[string]interface{
 				return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
 			}
 		case time.Duration:
-			values[tf.Name], err = time.ParseDuration(value)
+			duration, err := libtime.ParseDuration(ctx, value)
 			if err != nil {
 				return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
 			}
+			values[tf.Name] = *duration
 		default:
 			return nil, errors.Errorf(ctx, "field %s with type %T is unsupported", tf.Name, ef.Interface())
 		}

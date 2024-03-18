@@ -5,24 +5,29 @@
 package argument
 
 import (
+	"context"
 	"flag"
 	"reflect"
 	"strconv"
 	"time"
 
-	"github.com/pkg/errors"
+	"github.com/bborbe/errors"
+	libtime "github.com/bborbe/time"
 )
 
 // ParseArgs into the given struct.
-func ParseArgs(data interface{}, args []string) error {
-	values, err := argsToValues(data, args)
+func ParseArgs(ctx context.Context, data interface{}, args []string) error {
+	values, err := argsToValues(ctx, data, args)
 	if err != nil {
-		return err
+		return errors.Wrapf(ctx, err, "args to values failed")
 	}
-	return Fill(data, values)
+	if err := Fill(ctx, data, values); err != nil {
+		return errors.Wrapf(ctx, err, "fill failed")
+	}
+	return nil
 }
 
-func argsToValues(data interface{}, args []string) (map[string]interface{}, error) {
+func argsToValues(ctx context.Context, data interface{}, args []string) (map[string]interface{}, error) {
 	e := reflect.ValueOf(data).Elem()
 	t := e.Type()
 	values := make(map[string]interface{})
@@ -70,20 +75,35 @@ func argsToValues(data interface{}, args []string) (map[string]interface{}, erro
 				}
 				v, err := strconv.ParseFloat(s, 64)
 				if err != nil {
-					return err
+					return errors.Wrapf(ctx, err, "parse float failed")
 				}
 				values[tf.Name] = v
 				return nil
 			})
 		case time.Duration:
-			defaultValue, _ := time.ParseDuration(defaultString)
-			values[tf.Name] = flag.CommandLine.Duration(argName, defaultValue, usage)
+			if found {
+				defaultValue, _ := libtime.ParseDuration(ctx, defaultString)
+				if defaultValue != nil {
+					values[tf.Name] = defaultValue
+				}
+			}
+			flag.CommandLine.Func(argName, usage, func(value string) error {
+				if value == "" {
+					return nil
+				}
+				duration, err := libtime.ParseDuration(ctx, value)
+				if err != nil {
+					return errors.Wrapf(ctx, err, "parse duration failed")
+				}
+				values[tf.Name] = duration
+				return nil
+			})
 		default:
-			return nil, errors.Errorf("field %s with type %T is unsupported", tf.Name, ef.Interface())
+			return nil, errors.Errorf(ctx, "field %s with type %T is unsupported", tf.Name, ef.Interface())
 		}
 	}
 	if err := flag.CommandLine.Parse(args); err != nil {
-		return nil, err
+		return nil, errors.Wrapf(ctx, err, "parse commandline failed")
 	}
 	return values, nil
 }

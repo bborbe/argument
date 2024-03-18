@@ -5,31 +5,34 @@
 package argument
 
 import (
+	"context"
 	"os"
+
+	"github.com/bborbe/errors"
 )
 
 // Parse combines all functionality. It parse env args, fills it the struct, print all arguments and validate required fields are set.
-func Parse(data interface{}) error {
-	argsValues, err := argsToValues(data, os.Args[1:])
+func Parse(ctx context.Context, data interface{}) error {
+	argsValues, err := argsToValues(ctx, data, os.Args[1:])
 	if err != nil {
-		return err
+		return errors.Wrapf(ctx, err, "arg to values failed")
 	}
-	envValues, err := envToValues(data, os.Environ())
+	envValues, err := envToValues(ctx, data, os.Environ())
 	if err != nil {
-		return err
+		return errors.Wrapf(ctx, err, "env to values failed")
 	}
-	defaultValues, err := DefaultValues(data)
+	defaultValues, err := DefaultValues(ctx, data)
 	if err != nil {
-		return err
+		return errors.Wrapf(ctx, err, "default values failed")
 	}
-	if err := Fill(data, mergeValues(defaultValues, argsValues, envValues)); err != nil {
-		return err
+	if err := Fill(ctx, data, mergeValues(defaultValues, argsValues, envValues)); err != nil {
+		return errors.Wrapf(ctx, err, "fill failed")
 	}
-	if err := Print(data); err != nil {
-		return err
+	if err := Print(ctx, data); err != nil {
+		return errors.Wrapf(ctx, err, "print failed")
 	}
-	if err := ValidateRequired(data); err != nil {
-		return err
+	if err := ValidateRequired(ctx, data); err != nil {
+		return errors.Wrapf(ctx, err, "validate required failed")
 	}
 	return nil
 }

@@ -5,13 +5,14 @@
 package argument
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"reflect"
 )
 
 // Print all configured arguments. Set display:"hidden" to hide or display:"length" to only print the arguments length.
-func Print(data interface{}) error {
+func Print(ctx context.Context, data interface{}) error {
 	e := reflect.ValueOf(data).Elem()
 	t := e.Type()
 	for i := 0; i < e.NumField(); i++ {

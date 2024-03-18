@@ -5,6 +5,7 @@
 package argument_test
 
 import (
+	"context"
 	"time"
 
 	. "github.com/onsi/ginkgo"
@@ -14,13 +15,17 @@ import (
 )
 
 var _ = Describe("Required", func() {
+	var ctx context.Context
+	BeforeEach(func() {
+		ctx = context.Background()
+	})
 	It("returns error message for env", func() {
 		args := struct {
 			Username string `required:"true" env:"abc"`
 		}{
 			Username: "",
 		}
-		err := argument.ValidateRequired(&args)
+		err := argument.ValidateRequired(ctx, &args)
 		Expect(err).To(HaveOccurred())
 		Expect(err.Error()).To(Equal("Required field empty, define env abc"))
 	})
@@ -30,7 +35,7 @@ var _ = Describe("Required", func() {
 		}{
 			Username: "",
 		}
-		err := argument.ValidateRequired(&args)
+		err := argument.ValidateRequired(ctx, &args)
 		Expect(err).To(HaveOccurred())
 		Expect(err.Error()).To(Equal("Required field empty, define parameter abc"))
 	})
@@ -40,7 +45,7 @@ var _ = Describe("Required", func() {
 		}{
 			Username: "",
 		}
-		err := argument.ValidateRequired(&args)
+		err := argument.ValidateRequired(ctx, &args)
 		Expect(err).To(HaveOccurred())
 		Expect(err.Error()).To(Equal("Required field empty, define parameter abc or define env abc"))
 	})
@@ -50,7 +55,7 @@ var _ = Describe("Required", func() {
 		}{
 			Username: "Ben",
 		}
-		err := argument.ValidateRequired(&args)
+		err := argument.ValidateRequired(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 	})
 	It("returns error if required string is empty", func() {
@@ -59,7 +64,7 @@ var _ = Describe("Required", func() {
 		}{
 			Username: "",
 		}
-		err := argument.ValidateRequired(&args)
+		err := argument.ValidateRequired(ctx, &args)
 		Expect(err).To(HaveOccurred())
 	})
 	It("returns no error if required string is not empty", func() {
@@ -68,7 +73,7 @@ var _ = Describe("Required", func() {
 		}{
 			Username: "Ben",
 		}
-		err := argument.ValidateRequired(&args)
+		err := argument.ValidateRequired(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 	})
 	It("returns error if required int is empty", func() {
@@ -77,7 +82,7 @@ var _ = Describe("Required", func() {
 		}{
 			Age: 0,
 		}
-		err := argument.ValidateRequired(&args)
+		err := argument.ValidateRequired(ctx, &args)
 		Expect(err).To(HaveOccurred())
 	})
 	It("returns no error if required int is not empty", func() {
@@ -86,7 +91,7 @@ var _ = Describe("Required", func() {
 		}{
 			Age: 29,
 		}
-		err := argument.ValidateRequired(&args)
+		err := argument.ValidateRequired(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 	})
 	It("returns error if required int64 is empty", func() {
@@ -95,7 +100,7 @@ var _ = Describe("Required", func() {
 		}{
 			Age: 0,
 		}
-		err := argument.ValidateRequired(&args)
+		err := argument.ValidateRequired(ctx, &args)
 		Expect(err).To(HaveOccurred())
 	})
 	It("returns no error if required int64 is not empty", func() {
@@ -104,7 +109,7 @@ var _ = Describe("Required", func() {
 		}{
 			Age: 29,
 		}
-		err := argument.ValidateRequired(&args)
+		err := argument.ValidateRequired(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 	})
 	It("returns error if required uint is empty", func() {
@@ -113,7 +118,7 @@ var _ = Describe("Required", func() {
 		}{
 			Age: 0,
 		}
-		err := argument.ValidateRequired(&args)
+		err := argument.ValidateRequired(ctx, &args)
 		Expect(err).To(HaveOccurred())
 	})
 	It("returns no error if required uint is not empty", func() {
@@ -122,7 +127,7 @@ var _ = Describe("Required", func() {
 		}{
 			Age: 29,
 		}
-		err := argument.ValidateRequired(&args)
+		err := argument.ValidateRequired(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 	})
 	It("returns error if required uint64 is empty", func() {
@@ -131,7 +136,7 @@ var _ = Describe("Required", func() {
 		}{
 			Age: 0,
 		}
-		err := argument.ValidateRequired(&args)
+		err := argument.ValidateRequired(ctx, &args)
 		Expect(err).To(HaveOccurred())
 	})
 	It("returns no error if required uint64 is not empty", func() {
@@ -140,7 +145,7 @@ var _ = Describe("Required", func() {
 		}{
 			Age: 29,
 		}
-		err := argument.ValidateRequired(&args)
+		err := argument.ValidateRequired(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 	})
 	It("returns error if required float64 is empty", func() {
@@ -149,7 +154,7 @@ var _ = Describe("Required", func() {
 		}{
 			Age: 0,
 		}
-		err := argument.ValidateRequired(&args)
+		err := argument.ValidateRequired(ctx, &args)
 		Expect(err).To(HaveOccurred())
 	})
 	It("returns no error if required float64 is not empty", func() {
@@ -158,7 +163,7 @@ var _ = Describe("Required", func() {
 		}{
 			Age: 29,
 		}
-		err := argument.ValidateRequired(&args)
+		err := argument.ValidateRequired(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 	})
 	It("returns error if required *float64 is empty", func() {
@@ -167,7 +172,7 @@ var _ = Describe("Required", func() {
 		}{
 			Age: nil,
 		}
-		err := argument.ValidateRequired(&args)
+		err := argument.ValidateRequired(ctx, &args)
 		Expect(err).To(HaveOccurred())
 	})
 	It("returns no error if required *float64 is not empty", func() {
@@ -177,7 +182,7 @@ var _ = Describe("Required", func() {
 		}{
 			Age: &v,
 		}
-		err := argument.ValidateRequired(&args)
+		err := argument.ValidateRequired(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 	})
 
@@ -187,7 +192,7 @@ var _ = Describe("Required", func() {
 		}{
 			Age: 0,
 		}
-		err := argument.ValidateRequired(&args)
+		err := argument.ValidateRequired(ctx, &args)
 		Expect(err).To(HaveOccurred())
 	})
 	It("returns no error if required time.Duration is not empty", func() {
@@ -196,21 +201,21 @@ var _ = Describe("Required", func() {
 		}{
 			Age: time.Minute,
 		}
-		err := argument.ValidateRequired(&args)
+		err := argument.ValidateRequired(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 	})
 	It("returns no error if if bool", func() {
 		var args struct {
 			Confirm bool `required:"true"`
 		}
-		err := argument.ValidateRequired(&args)
+		err := argument.ValidateRequired(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 	})
 	It("returns error type is not supported", func() {
 		var args struct {
 			Banana interface{} `required:"true"`
 		}
-		err := argument.ValidateRequired(&args)
+		err := argument.ValidateRequired(ctx, &args)
 		Expect(err).To(HaveOccurred())
 		Expect(err.Error()).To(Equal("field Banana with type <nil> is unsupported"))
 	})
@@ -222,7 +227,7 @@ var _ = Describe("Required", func() {
 			Username: "Ben",
 			Password: "",
 		}
-		err := argument.ValidateRequired(&args)
+		err := argument.ValidateRequired(ctx, &args)
 		Expect(err).NotTo(BeNil())
 	})
 	It("returns error if required int32 is empty", func() {
@@ -231,7 +236,7 @@ var _ = Describe("Required", func() {
 		}{
 			Age: 0,
 		}
-		err := argument.ValidateRequired(&args)
+		err := argument.ValidateRequired(ctx, &args)
 		Expect(err).To(HaveOccurred())
 	})
 	It("returns no error if required int32 is not empty", func() {
@@ -240,7 +245,7 @@ var _ = Describe("Required", func() {
 		}{
 			Age: 29,
 		}
-		err := argument.ValidateRequired(&args)
+		err := argument.ValidateRequired(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 	})
 })

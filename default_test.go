@@ -5,6 +5,8 @@
 package argument_test
 
 import (
+	"context"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -12,11 +14,15 @@ import (
 )
 
 var _ = Describe("DefaultValues", func() {
+	var ctx context.Context
+	BeforeEach(func() {
+		ctx = context.Background()
+	})
 	It("default string", func() {
 		var args struct {
 			Username string `default:"user"`
 		}
-		data, err := argument.DefaultValues(&args)
+		data, err := argument.DefaultValues(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(data).To(HaveKeyWithValue("Username", "user"))
 	})
@@ -24,7 +30,7 @@ var _ = Describe("DefaultValues", func() {
 		var args struct {
 			Age int `default:"29"`
 		}
-		data, err := argument.DefaultValues(&args)
+		data, err := argument.DefaultValues(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(data).To(HaveKeyWithValue("Age", 29))
 	})
@@ -32,7 +38,7 @@ var _ = Describe("DefaultValues", func() {
 		var args struct {
 			Age int `default:"age"`
 		}
-		data, err := argument.DefaultValues(&args)
+		data, err := argument.DefaultValues(ctx, &args)
 		Expect(err).To(HaveOccurred())
 		Expect(data).To(BeNil())
 	})
@@ -40,7 +46,7 @@ var _ = Describe("DefaultValues", func() {
 		var args struct {
 			Age int64 `default:"29"`
 		}
-		data, err := argument.DefaultValues(&args)
+		data, err := argument.DefaultValues(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 		value, ok := data["Age"]
 		Expect(ok).To(BeTrue())
@@ -50,7 +56,7 @@ var _ = Describe("DefaultValues", func() {
 		var args struct {
 			Age int64 `default:"age"`
 		}
-		data, err := argument.DefaultValues(&args)
+		data, err := argument.DefaultValues(ctx, &args)
 		Expect(err).To(HaveOccurred())
 		Expect(data).To(BeNil())
 	})
@@ -58,7 +64,7 @@ var _ = Describe("DefaultValues", func() {
 		var args struct {
 			Age uint `default:"29"`
 		}
-		data, err := argument.DefaultValues(&args)
+		data, err := argument.DefaultValues(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 		value, ok := data["Age"]
 		Expect(ok).To(BeTrue())
@@ -68,7 +74,7 @@ var _ = Describe("DefaultValues", func() {
 		var args struct {
 			Age uint `default:"age"`
 		}
-		data, err := argument.DefaultValues(&args)
+		data, err := argument.DefaultValues(ctx, &args)
 		Expect(err).To(HaveOccurred())
 		Expect(data).To(BeNil())
 	})
@@ -76,7 +82,7 @@ var _ = Describe("DefaultValues", func() {
 		var args struct {
 			Age uint64 `default:"29"`
 		}
-		data, err := argument.DefaultValues(&args)
+		data, err := argument.DefaultValues(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 		value, ok := data["Age"]
 		Expect(ok).To(BeTrue())
@@ -86,7 +92,7 @@ var _ = Describe("DefaultValues", func() {
 		var args struct {
 			Age uint64 `default:"age"`
 		}
-		data, err := argument.DefaultValues(&args)
+		data, err := argument.DefaultValues(ctx, &args)
 		Expect(err).To(HaveOccurred())
 		Expect(data).To(BeNil())
 	})
@@ -94,7 +100,7 @@ var _ = Describe("DefaultValues", func() {
 		var args struct {
 			Age int32 `default:"29"`
 		}
-		data, err := argument.DefaultValues(&args)
+		data, err := argument.DefaultValues(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 		value, ok := data["Age"]
 		Expect(ok).To(BeTrue())
@@ -104,7 +110,7 @@ var _ = Describe("DefaultValues", func() {
 		var args struct {
 			Age int32 `default:"age"`
 		}
-		data, err := argument.DefaultValues(&args)
+		data, err := argument.DefaultValues(ctx, &args)
 		Expect(err).To(HaveOccurred())
 		Expect(data).To(BeNil())
 	})

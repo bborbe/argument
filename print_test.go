@@ -6,6 +6,7 @@ package argument_test
 
 import (
 	"bytes"
+	"context"
 	"log"
 
 	. "github.com/onsi/ginkgo"
@@ -25,7 +26,9 @@ var _ = Describe("Print", func() {
 	}
 	var buf *bytes.Buffer
 	var args app
+	var ctx context.Context
 	BeforeEach(func() {
+		ctx = context.Background()
 		buf = &bytes.Buffer{}
 		log.SetOutput(buf)
 		log.SetFlags(0)
@@ -39,11 +42,11 @@ var _ = Describe("Print", func() {
 		}
 	})
 	It("print without error", func() {
-		err := argument.Print(&args)
+		err := argument.Print(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 	})
 	It("foo", func() {
-		err := argument.Print(&args)
+		err := argument.Print(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(buf.String()).To(Equal(`Argument: Username 'Ben'
 Argument: Password length 6

@@ -5,15 +5,16 @@
 package argument
 
 import (
+	"context"
 	"reflect"
 	"strconv"
 	"time"
 
-	"github.com/pkg/errors"
+	"github.com/bborbe/errors"
 )
 
 // DefaultValues returns all default values of the given struct.
-func DefaultValues(data interface{}) (map[string]interface{}, error) {
+func DefaultValues(ctx context.Context, data interface{}) (map[string]interface{}, error) {
 	var err error
 	e := reflect.ValueOf(data).Elem()
 	t := e.Type()
@@ -31,51 +32,51 @@ func DefaultValues(data interface{}) (map[string]interface{}, error) {
 		case bool:
 			values[tf.Name], err = strconv.ParseBool(value)
 			if err != nil {
-				return nil, errors.Errorf("parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+				return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
 			}
 		case int:
 			values[tf.Name], err = strconv.Atoi(value)
 			if err != nil {
-				return nil, errors.Errorf("parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+				return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
 			}
 		case int64:
 			values[tf.Name], err = strconv.ParseInt(value, 10, 0)
 			if err != nil {
-				return nil, errors.Errorf("parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+				return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
 			}
 		case uint:
 			values[tf.Name], err = strconv.ParseUint(value, 10, 0)
 			if err != nil {
-				return nil, errors.Errorf("parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+				return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
 			}
 		case uint64:
 			values[tf.Name], err = strconv.ParseUint(value, 10, 0)
 			if err != nil {
-				return nil, errors.Errorf("parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+				return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
 			}
 		case int32:
 			v, err := strconv.ParseInt(value, 10, 0)
 			if err != nil {
-				return nil, errors.Errorf("parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+				return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
 			}
 			values[tf.Name] = int32(v)
 		case float64:
 			values[tf.Name], err = strconv.ParseFloat(value, 64)
 			if err != nil {
-				return nil, errors.Errorf("parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+				return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
 			}
 		case *float64:
 			values[tf.Name], err = strconv.ParseFloat(value, 64)
 			if err != nil {
-				return nil, errors.Errorf("parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+				return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
 			}
 		case time.Duration:
 			values[tf.Name], err = time.ParseDuration(value)
 			if err != nil {
-				return nil, errors.Errorf("parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+				return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
 			}
 		default:
-			return nil, errors.Errorf("field %s with type %T is unsupported", tf.Name, ef.Interface())
+			return nil, errors.Errorf(ctx, "field %s with type %T is unsupported", tf.Name, ef.Interface())
 		}
 	}
 	return values, nil

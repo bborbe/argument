@@ -6,6 +6,7 @@ package argument_test
 
 import (
 	"bytes"
+	"context"
 	"flag"
 	"os"
 
@@ -16,7 +17,9 @@ import (
 )
 
 var _ = Describe("Parse", func() {
+	var ctx context.Context
 	BeforeEach(func() {
+		ctx = context.Background()
 		flag.CommandLine.SetOutput(&bytes.Buffer{})
 		flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 		os.Args = []string{"go"}
@@ -27,7 +30,7 @@ var _ = Describe("Parse", func() {
 			Amount float64 `arg:"amount" env:"Amount"`
 		}
 		os.Args = []string{"go"}
-		err := argument.Parse(&args)
+		err := argument.Parse(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(args.Amount).To(Equal(float64(0)))
 	})
@@ -36,7 +39,7 @@ var _ = Describe("Parse", func() {
 			Amount float64 `arg:"amount" env:"Amount"`
 		}
 		os.Args = []string{"go", "-amount=23.5"}
-		err := argument.Parse(&args)
+		err := argument.Parse(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(args.Amount).To(Equal(23.5))
 	})
@@ -45,7 +48,7 @@ var _ = Describe("Parse", func() {
 			Amount *float64 `arg:"amount" env:"Amount"`
 		}
 		os.Args = []string{"go", "-amount=23.5"}
-		err := argument.Parse(&args)
+		err := argument.Parse(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(args.Amount).NotTo(BeNil())
 		Expect(*args.Amount).To(Equal(23.5))
@@ -55,7 +58,7 @@ var _ = Describe("Parse", func() {
 			Amount *float64 `arg:"amount" env:"Amount"`
 		}
 		os.Args = []string{"go", "-amount=23.5"}
-		err := argument.Parse(&args)
+		err := argument.Parse(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(args.Amount).NotTo(BeNil())
 		Expect(*args.Amount).To(Equal(23.5))
@@ -65,7 +68,7 @@ var _ = Describe("Parse", func() {
 			Amount *float64 `arg:"amount" env:"Amount"`
 		}
 		os.Args = []string{"go"}
-		err := argument.Parse(&args)
+		err := argument.Parse(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(args.Amount).To(BeNil())
 	})
@@ -74,7 +77,7 @@ var _ = Describe("Parse", func() {
 			Username string `arg:"user" env:"user"`
 		}
 		os.Args = []string{"go", "-user=Ben"}
-		err := argument.Parse(&args)
+		err := argument.Parse(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(args.Username).To(Equal("Ben"))
 	})
@@ -83,7 +86,7 @@ var _ = Describe("Parse", func() {
 			Username string `arg:"user" env:"user"`
 		}
 		_ = os.Setenv("user", "Ben")
-		err := argument.Parse(&args)
+		err := argument.Parse(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(args.Username).To(Equal("Ben"))
 	})
@@ -91,7 +94,7 @@ var _ = Describe("Parse", func() {
 		var args struct {
 			Username string `arg:"user" env:"user" default:"Ben"`
 		}
-		err := argument.Parse(&args)
+		err := argument.Parse(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(args.Username).To(Equal("Ben"))
 	})
@@ -101,7 +104,7 @@ var _ = Describe("Parse", func() {
 		}
 		os.Args = []string{"go", "-user=Arg"}
 		_ = os.Setenv("user", "Env")
-		err := argument.Parse(&args)
+		err := argument.Parse(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(args.Username).To(Equal("Env"))
 	})
@@ -110,7 +113,7 @@ var _ = Describe("Parse", func() {
 			Username string `arg:"user" env:"user" default:"Default"`
 		}
 		os.Args = []string{"go", "-user=Arg"}
-		err := argument.Parse(&args)
+		err := argument.Parse(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(args.Username).To(Equal("Arg"))
 	})

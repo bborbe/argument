@@ -6,15 +6,16 @@ package argument
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"reflect"
 	"time"
 
-	"github.com/pkg/errors"
+	"github.com/bborbe/errors"
 )
 
 // ValidateRequired fields are set and returns an error if not.
-func ValidateRequired(data interface{}) error {
+func ValidateRequired(ctx context.Context, data interface{}) error {
 	e := reflect.ValueOf(data).Elem()
 	t := e.Type()
 	for i := 0; i < e.NumField(); i++ {
@@ -37,7 +38,7 @@ func ValidateRequired(data interface{}) error {
 				}
 				fmt.Fprintf(buf, "define env %s", envName)
 			}
-			return errors.New(buf.String())
+			return errors.New(ctx, buf.String())
 		}
 		switch ef.Interface().(type) {
 		case string:
@@ -87,7 +88,7 @@ func ValidateRequired(data interface{}) error {
 				return createError()
 			}
 		default:
-			return errors.Errorf("field %s with type %T is unsupported", tf.Name, ef.Interface())
+			return errors.Errorf(ctx, "field %s with type %T is unsupported", tf.Name, ef.Interface())
 		}
 	}
 	return nil

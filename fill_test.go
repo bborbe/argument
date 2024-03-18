@@ -5,6 +5,8 @@
 package argument_test
 
 import (
+	"context"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -12,6 +14,10 @@ import (
 )
 
 var _ = Describe("Fill", func() {
+	var ctx context.Context
+	BeforeEach(func() {
+		ctx = context.Background()
+	})
 	It("fills map to struct", func() {
 		var args struct {
 			Username string
@@ -19,7 +25,7 @@ var _ = Describe("Fill", func() {
 		data := map[string]interface{}{
 			"Username": "Ben",
 		}
-		err := argument.Fill(&args, data)
+		err := argument.Fill(ctx, &args, data)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(args.Username).To(Equal("Ben"))
 	})
@@ -27,7 +33,7 @@ var _ = Describe("Fill", func() {
 		data := map[string]interface{}{
 			"Username": "Ben",
 		}
-		err := argument.Fill("", data)
+		err := argument.Fill(ctx, "", data)
 		Expect(err).To(HaveOccurred())
 	})
 })

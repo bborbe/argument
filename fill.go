@@ -6,19 +6,20 @@ package argument
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 
-	"github.com/pkg/errors"
+	"github.com/bborbe/errors"
 )
 
 // Fill the given map into the struct.
-func Fill(data interface{}, values map[string]interface{}) error {
+func Fill(ctx context.Context, data interface{}, values map[string]interface{}) error {
 	buf := &bytes.Buffer{}
 	if err := json.NewEncoder(buf).Encode(values); err != nil {
-		return errors.Wrap(err, "encode json failed")
+		return errors.Wrap(ctx, err, "encode json failed")
 	}
 	if err := json.NewDecoder(buf).Decode(data); err != nil {
-		return errors.Wrap(err, "decode json failed")
+		return errors.Wrap(ctx, err, "decode json failed")
 	}
 	return nil
 }

@@ -5,6 +5,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 
@@ -12,11 +13,12 @@ import (
 )
 
 func main() {
+	ctx := context.Background()
 	var data struct {
 		Username string `arg:"username" default:"ben"`
 		Password string `arg:"password"`
 	}
-	if err := argument.Parse(&data); err != nil {
+	if err := argument.Parse(ctx, &data); err != nil {
 		log.Fatalf("parse args failed: %v", err)
 	}
 	fmt.Printf("username %s, password %s\n", data.Username, data.Password)

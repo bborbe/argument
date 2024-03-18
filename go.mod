@@ -4,7 +4,7 @@ go 1.21.8
 
 require (
 	github.com/bborbe/errors v1.2.0
-	github.com/bborbe/time v1.1.0
+	github.com/bborbe/time v1.1.1
 	github.com/google/addlicense v1.1.1
 	github.com/incu6us/goimports-reviser v0.1.6
 	github.com/kisielk/errcheck v1.7.0

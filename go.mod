@@ -20,7 +20,7 @@ require (
 	github.com/bborbe/collection v1.8.0 // indirect
 	github.com/bborbe/math v1.1.0 // indirect
 	github.com/bborbe/parse v1.5.0 // indirect
-	github.com/bborbe/run v1.5.3 // indirect
+	github.com/bborbe/run v1.5.4 // indirect
 	github.com/bborbe/validation v1.2.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bmatcuk/doublestar/v4 v4.7.1 // indirect

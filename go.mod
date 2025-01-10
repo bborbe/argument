@@ -19,7 +19,7 @@ require (
 require (
 	github.com/bborbe/collection v1.8.0 // indirect
 	github.com/bborbe/math v1.1.0 // indirect
-	github.com/bborbe/parse v1.5.0 // indirect
+	github.com/bborbe/parse v1.6.0 // indirect
 	github.com/bborbe/run v1.5.4 // indirect
 	github.com/bborbe/validation v1.2.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -33,20 +33,21 @@ require (
 	github.com/incu6us/goimports-reviser v0.1.6 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/nxadm/tail v1.4.11 // indirect
+	github.com/onsi/ginkgo/v2 v2.22.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/prometheus/client_golang v1.20.5 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.61.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
-	golang.org/x/exp v0.0.0-20241217172543-b2144cdd0a67 // indirect
+	golang.org/x/exp v0.0.0-20250106191152-7588d65b2ba8 // indirect
 	golang.org/x/mod v0.22.0 // indirect
-	golang.org/x/net v0.33.0 // indirect
+	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/sync v0.10.0 // indirect
-	golang.org/x/sys v0.28.0 // indirect
-	golang.org/x/telemetry v0.0.0-20241220003058-cc96b6e0d3d9 // indirect
+	golang.org/x/sys v0.29.0 // indirect
+	golang.org/x/telemetry v0.0.0-20250105011419-6d9ea865d014 // indirect
 	golang.org/x/text v0.21.0 // indirect
-	golang.org/x/tools v0.28.0 // indirect
-	google.golang.org/protobuf v1.36.1 // indirect
+	golang.org/x/tools v0.29.0 // indirect
+	google.golang.org/protobuf v1.36.2 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

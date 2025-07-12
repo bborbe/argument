@@ -36,4 +36,34 @@ var _ = Describe("Fill", func() {
 		err := argument.Fill(ctx, "", data)
 		Expect(err).To(HaveOccurred())
 	})
+
+	It("returns error if encode json fails", func() {
+		var args struct {
+			Username string
+		}
+		// Create data that cannot be JSON encoded
+		data := map[string]interface{}{
+			"Username": make(chan int), // channels cannot be JSON encoded
+		}
+		err := argument.Fill(ctx, &args, data)
+		Expect(err).To(HaveOccurred())
+		Expect(err.Error()).To(ContainSubstring("encode json failed"))
+	})
+
+	It("handles complex data structures", func() {
+		var args struct {
+			Config map[string]interface{}
+		}
+		data := map[string]interface{}{
+			"Config": map[string]interface{}{
+				"key": "value",
+				"nested": map[string]interface{}{
+					"inner": "data",
+				},
+			},
+		}
+		err := argument.Fill(ctx, &args, data)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(args.Config["key"]).To(Equal("value"))
+	})
 })

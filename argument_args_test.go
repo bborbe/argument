@@ -274,4 +274,201 @@ var _ = Describe("ParseArgs", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(args.Age).To(Equal(int32(29)))
 	})
+
+	Context("Edge cases and error handling", func() {
+		It("handles arguments with special characters", func() {
+			var args struct {
+				Message string `arg:"message"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-message=Hello World! @#$%"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Message).To(Equal("Hello World! @#$%"))
+		})
+
+		It("handles arguments with unicode characters", func() {
+			var args struct {
+				Name string `arg:"name"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-name=世界 🌍"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Name).To(Equal("世界 🌍"))
+		})
+
+		It("handles negative numbers in arguments", func() {
+			var args struct {
+				Temperature int     `arg:"temp"`
+				Balance     float64 `arg:"balance"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-temp=-10", "-balance=-99.99"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Temperature).To(Equal(-10))
+			Expect(args.Balance).To(Equal(-99.99))
+		})
+
+		It("handles boundary values for numeric types", func() {
+			var args struct {
+				MaxInt   int     `arg:"maxint"`
+				MaxFloat float64 `arg:"maxfloat"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{
+				"-maxint=2147483647",
+				"-maxfloat=1.7976931348623157e+308",
+			})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.MaxInt).To(Equal(2147483647))
+			Expect(args.MaxFloat).To(Equal(1.7976931348623157e+308))
+		})
+
+		It("handles scientific notation for float64", func() {
+			var args struct {
+				Scientific float64 `arg:"sci"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-sci=1.23e-10"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Scientific).To(Equal(1.23e-10))
+		})
+
+		It("returns error for overflow in integer parsing", func() {
+			var args struct {
+				SmallInt int32 `arg:"small"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-small=9999999999999999999"})
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("handles malformed duration arguments", func() {
+			var args struct {
+				Timeout time.Duration `arg:"timeout"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-timeout=invalid-duration"})
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("handles duration with weeks", func() {
+			var args struct {
+				Period time.Duration `arg:"period"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-period=2w"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Period).To(Equal(2 * 7 * 24 * time.Hour))
+		})
+
+		It("handles complex duration combinations", func() {
+			var args struct {
+				Period time.Duration `arg:"period"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-period=1d2h30m"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Period).To(Equal(24*time.Hour + 2*time.Hour + 30*time.Minute))
+		})
+
+		It("handles zero values correctly", func() {
+			var args struct {
+				Count  int     `arg:"count"`
+				Amount float64 `arg:"amount"`
+				Active bool    `arg:"active"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-count=0", "-amount=0.0", "-active=false"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Count).To(Equal(0))
+			Expect(args.Amount).To(Equal(0.0))
+			Expect(args.Active).To(BeFalse())
+		})
+
+		It("handles empty string arguments", func() {
+			var args struct {
+				EmptyString string `arg:"empty"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-empty="})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.EmptyString).To(Equal(""))
+		})
+
+		It("handles multiple boolean formats", func() {
+			var args struct {
+				True1  bool `arg:"true1"`
+				True2  bool `arg:"true2"`
+				False1 bool `arg:"false1"`
+				False2 bool `arg:"false2"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{
+				"-true1=true",
+				"-true2=1",
+				"-false1=false",
+				"-false2=0",
+			})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.True1).To(BeTrue())
+			Expect(args.True2).To(BeTrue())
+			Expect(args.False1).To(BeFalse())
+			Expect(args.False2).To(BeFalse())
+		})
+
+		It("returns error for malformed float64 arguments", func() {
+			var args struct {
+				Amount float64 `arg:"amount"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-amount=not-a-number"})
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("returns error for malformed *float64 arguments", func() {
+			var args struct {
+				Amount *float64 `arg:"amount"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-amount=invalid-float"})
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("handles arguments containing equals signs", func() {
+			var args struct {
+				Config string `arg:"config"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-config=key=value=another"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Config).To(Equal("key=value=another"))
+		})
+
+		It("handles arguments with spaces when quoted properly", func() {
+			var args struct {
+				Message string `arg:"message"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-message=Hello World"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Message).To(Equal("Hello World"))
+		})
+
+		It("leaves *float64 nil when argument is empty", func() {
+			var args struct {
+				Amount *float64 `arg:"amount"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-amount="})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Amount).To(BeNil())
+		})
+
+		It("handles case sensitive argument names", func() {
+			var args struct {
+				LowerCase string `arg:"lowercase"`
+				UpperCase string `arg:"UPPERCASE"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-lowercase=lower", "-UPPERCASE=upper"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.LowerCase).To(Equal("lower"))
+			Expect(args.UpperCase).To(Equal("upper"))
+		})
+
+		It("handles empty duration argument value", func() {
+			var args struct {
+				Timeout time.Duration `arg:"timeout"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-timeout="})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Timeout).To(Equal(time.Duration(0)))
+		})
+
+		// Note: The Fill error path in ParseArgs is difficult to trigger
+		// because it requires JSON encoding/decoding to fail after successful
+		// reflection setup, which is rare with normal struct types
+	})
 })

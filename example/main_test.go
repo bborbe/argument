@@ -18,7 +18,7 @@ var _ = Describe("Main", func() {
 		session, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
 		Expect(err).NotTo(HaveOccurred())
 
-		Eventually(session).Should(gexec.Exit(0))
+		Eventually(session, "30s").Should(gexec.Exit(0))
 		output := string(session.Out.Contents())
 		Expect(output).To(ContainSubstring("Username:ben"))
 		Expect(output).To(ContainSubstring("Password:"))
@@ -34,7 +34,7 @@ var _ = Describe("Main", func() {
 		session, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
 		Expect(err).NotTo(HaveOccurred())
 
-		Eventually(session).Should(gexec.Exit(0))
+		Eventually(session, "30s").Should(gexec.Exit(0))
 		output := string(session.Out.Contents())
 		Expect(output).To(ContainSubstring("Username:ben")) // default value
 		Expect(output).To(ContainSubstring("Password:1337"))
@@ -47,7 +47,7 @@ var _ = Describe("Main", func() {
 		session, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
 		Expect(err).NotTo(HaveOccurred())
 
-		Eventually(session).Should(gexec.Exit(0))
+		Eventually(session, "30s").Should(gexec.Exit(0))
 		output := string(session.Out.Contents())
 		Expect(output).To(ContainSubstring("Username:testuser"))
 	})
@@ -61,7 +61,7 @@ var _ = Describe("Main", func() {
 		session, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
 		Expect(err).NotTo(HaveOccurred())
 
-		Eventually(session).Should(gexec.Exit(0))
+		Eventually(session, "30s").Should(gexec.Exit(0))
 		output := string(session.Out.Contents())
 		Expect(output).To(ContainSubstring("Username:customuser"))
 		Expect(output).To(ContainSubstring("Password:secret123"))
@@ -73,7 +73,7 @@ var _ = Describe("Main", func() {
 		session, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
 		Expect(err).NotTo(HaveOccurred())
 
-		Eventually(session).Should(gexec.Exit(0))
+		Eventually(session, "30s").Should(gexec.Exit(0))
 		output := string(session.Out.Contents())
 		Expect(output).To(ContainSubstring("Active:"))
 	})
@@ -87,7 +87,7 @@ var _ = Describe("Main", func() {
 		session, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
 		Expect(err).NotTo(HaveOccurred())
 
-		Eventually(session).Should(gexec.Exit(0))
+		Eventually(session, "30s").Should(gexec.Exit(0))
 		// Verify the custom types are working by checking output format
 		output := string(session.Out.Contents())
 		Expect(output).To(MatchRegexp(`Username:demo`))

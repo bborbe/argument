@@ -14,6 +14,52 @@ import (
 	"github.com/bborbe/errors"
 )
 
+func handleCustomTypeValidation(ctx context.Context, tf reflect.StructField, ef reflect.Value, createError func() error) (bool, error) {
+	// Get the underlying type
+	underlyingType := ef.Type()
+	for underlyingType.Kind() == reflect.Ptr {
+		underlyingType = underlyingType.Elem()
+	}
+
+	// Check if it's a named type (custom type) with an underlying primitive type
+	if underlyingType.PkgPath() != "" && underlyingType.Kind() != reflect.Struct {
+		switch underlyingType.Kind() {
+		case reflect.String:
+			// For custom string types, check if value equals zero value of underlying type
+			zeroValue := reflect.Zero(underlyingType).Interface()
+			if ef.Interface() == zeroValue {
+				return true, createError()
+			}
+			return true, nil
+		case reflect.Bool:
+			// Bool types are never considered "empty" for required validation
+			return true, nil
+		case reflect.Int, reflect.Int32, reflect.Int64:
+			// For custom int types, check if value equals zero value of underlying type
+			zeroValue := reflect.Zero(underlyingType).Interface()
+			if ef.Interface() == zeroValue {
+				return true, createError()
+			}
+			return true, nil
+		case reflect.Uint, reflect.Uint64:
+			// For custom uint types, check if value equals zero value of underlying type
+			zeroValue := reflect.Zero(underlyingType).Interface()
+			if ef.Interface() == zeroValue {
+				return true, createError()
+			}
+			return true, nil
+		case reflect.Float64:
+			// For custom float64 types, check if value equals zero value of underlying type
+			zeroValue := reflect.Zero(underlyingType).Interface()
+			if ef.Interface() == zeroValue {
+				return true, createError()
+			}
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
 // ValidateRequired fields are set and returns an error if not.
 func ValidateRequired(ctx context.Context, data interface{}) error {
 	e := reflect.ValueOf(data).Elem()
@@ -88,7 +134,14 @@ func ValidateRequired(ctx context.Context, data interface{}) error {
 				return createError()
 			}
 		default:
-			return errors.Errorf(ctx, "field %s with type %T is unsupported", tf.Name, ef.Interface())
+			// Check if it's a custom type with underlying primitive type
+			if handled, err := handleCustomTypeValidation(ctx, tf, ef, createError); handled {
+				if err != nil {
+					return err
+				}
+			} else {
+				return errors.Errorf(ctx, "field %s with type %T is unsupported", tf.Name, ef.Interface())
+			}
 		}
 	}
 	return nil

@@ -106,6 +106,39 @@ type APIConfig struct {
 err := argument.Parse(context.Background(), &config)
 ```
 
+### Custom Types
+
+You can use custom types (named types with underlying primitive types) for better type safety:
+
+```go
+type Username string
+type Port int
+type IsEnabled bool
+type Rate float64
+
+type AppConfig struct {
+    Username Username  `arg:"user" env:"USERNAME" default:"guest"`
+    Port     Port      `arg:"port" env:"PORT" default:"8080"`
+    Debug    IsEnabled `arg:"debug" env:"DEBUG" default:"false"`
+    Rate     Rate      `arg:"rate" env:"RATE" default:"1.5"`
+}
+
+var config AppConfig
+err := argument.Parse(context.Background(), &config)
+
+// Access values with type safety
+fmt.Printf("Username: %s\n", string(config.Username))
+fmt.Printf("Port: %d\n", int(config.Port)) 
+fmt.Printf("Debug: %t\n", bool(config.Debug))
+fmt.Printf("Rate: %f\n", float64(config.Rate))
+```
+
+Custom types work with all supported underlying types:
+- `string` → `type Username string`
+- `int`, `int32`, `int64`, `uint`, `uint64` → `type Port int`
+- `bool` → `type IsEnabled bool` 
+- `float64` → `type Rate float64`
+
 ## Supported Types
 
 - **Strings**: `string`
@@ -114,6 +147,7 @@ err := argument.Parse(context.Background(), &config)
 - **Booleans**: `bool`
 - **Durations**: `time.Duration` (with extended parsing)
 - **Pointers**: `*string`, `*int`, `*float64`, etc. (for optional values)
+- **Custom Types**: Named types with underlying primitive types
 
 ## Priority Order
 
@@ -212,4 +246,4 @@ Contributions are welcome! This project follows standard Go conventions and incl
 
 ## License
 
-BSD 3-Clause License - see [LICENSE](LICENSE) file for details.
+This project is licensed under the BSD-style license. See the LICENSE file for details.

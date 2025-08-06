@@ -248,4 +248,135 @@ var _ = Describe("Required", func() {
 		err := argument.ValidateRequired(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
 	})
+
+	Context("Custom types support", func() {
+		type Username string
+		type Port int
+		type IsActive bool
+		type Rate float64
+
+		It("returns error if required custom string type is empty", func() {
+			args := struct {
+				Username Username `required:"true" arg:"user"`
+			}{
+				Username: "",
+			}
+			err := argument.ValidateRequired(ctx, &args)
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(Equal("Required field empty, define parameter user"))
+		})
+
+		It("returns no error if required custom string type is not empty", func() {
+			args := struct {
+				Username Username `required:"true"`
+			}{
+				Username: "testuser",
+			}
+			err := argument.ValidateRequired(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("returns error if required custom int type is empty", func() {
+			args := struct {
+				Port Port `required:"true" env:"PORT"`
+			}{
+				Port: 0,
+			}
+			err := argument.ValidateRequired(ctx, &args)
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(Equal("Required field empty, define env PORT"))
+		})
+
+		It("returns no error if required custom int type is not empty", func() {
+			args := struct {
+				Port Port `required:"true"`
+			}{
+				Port: 8080,
+			}
+			err := argument.ValidateRequired(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("returns no error if required custom bool type is false", func() {
+			args := struct {
+				IsActive IsActive `required:"true"`
+			}{
+				IsActive: false,
+			}
+			err := argument.ValidateRequired(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("returns no error if required custom bool type is true", func() {
+			args := struct {
+				IsActive IsActive `required:"true"`
+			}{
+				IsActive: true,
+			}
+			err := argument.ValidateRequired(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("returns error if required custom float64 type is empty", func() {
+			args := struct {
+				Rate Rate `required:"true" arg:"rate" env:"RATE"`
+			}{
+				Rate: 0.0,
+			}
+			err := argument.ValidateRequired(ctx, &args)
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(Equal("Required field empty, define parameter rate or define env RATE"))
+		})
+
+		It("returns no error if required custom float64 type is not empty", func() {
+			args := struct {
+				Rate Rate `required:"true"`
+			}{
+				Rate: 3.14,
+			}
+			err := argument.ValidateRequired(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("handles multiple custom types with mixed requirements", func() {
+			args := struct {
+				Username Username `required:"true"`
+				Port     Port     `required:"true"`
+				IsActive IsActive `required:"true"`
+				Rate     Rate     // not required
+			}{
+				Username: "testuser",
+				Port:     8080,
+				IsActive: false,
+				Rate:     0.0, // should be fine since not required
+			}
+			err := argument.ValidateRequired(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("returns error for first empty required custom field", func() {
+			args := struct {
+				Username Username `required:"true" arg:"user"`
+				Port     Port     `required:"true" arg:"port"`
+			}{
+				Username: "", // empty, should fail here
+				Port:     8080,
+			}
+			err := argument.ValidateRequired(ctx, &args)
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(Equal("Required field empty, define parameter user"))
+		})
+
+		It("handles negative values as valid for custom numeric types", func() {
+			args := struct {
+				Port Port `required:"true"`
+				Rate Rate `required:"true"`
+			}{
+				Port: -1,
+				Rate: -3.14,
+			}
+			err := argument.ValidateRequired(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+		})
+	})
 })

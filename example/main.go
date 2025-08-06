@@ -12,14 +12,20 @@ import (
 	"github.com/bborbe/argument/v2"
 )
 
+type Username string
+type Password string
+type Active bool
+
 func main() {
 	ctx := context.Background()
 	var data struct {
-		Username string `arg:"username" default:"ben"`
-		Password string `arg:"password"`
+		Username Username `arg:"username" default:"ben"`
+		Password Password `arg:"password" display:"length"`
+		Active   *Active  `arg:"active"`
+		Url      string   `arg:"url"`
 	}
 	if err := argument.Parse(ctx, &data); err != nil {
 		log.Fatalf("parse args failed: %v", err)
 	}
-	fmt.Printf("username %s, password %s\n", data.Username, data.Password)
+	fmt.Printf("%+v\n", data)
 }

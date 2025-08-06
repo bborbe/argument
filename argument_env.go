@@ -26,6 +26,68 @@ func ParseEnv(ctx context.Context, data interface{}, environ []string) error {
 	return nil
 }
 
+func handleCustomTypeEnv(ctx context.Context, values map[string]interface{}, tf reflect.StructField, ef reflect.Value, value string) (bool, error) {
+	// Get the underlying type
+	underlyingType := ef.Type()
+	for underlyingType.Kind() == reflect.Ptr {
+		underlyingType = underlyingType.Elem()
+	}
+
+	// Check if it's a named type (custom type) with an underlying primitive type
+	if underlyingType.PkgPath() != "" && underlyingType.Kind() != reflect.Struct {
+		var err error
+		switch underlyingType.Kind() {
+		case reflect.String:
+			values[tf.Name] = value
+			return true, nil
+		case reflect.Bool:
+			values[tf.Name], err = strconv.ParseBool(value)
+			if err != nil {
+				return true, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+			}
+			return true, nil
+		case reflect.Int:
+			values[tf.Name], err = strconv.Atoi(value)
+			if err != nil {
+				return true, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+			}
+			return true, nil
+		case reflect.Int64:
+			values[tf.Name], err = strconv.ParseInt(value, 10, 0)
+			if err != nil {
+				return true, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+			}
+			return true, nil
+		case reflect.Uint:
+			values[tf.Name], err = strconv.ParseUint(value, 10, 0)
+			if err != nil {
+				return true, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+			}
+			return true, nil
+		case reflect.Uint64:
+			values[tf.Name], err = strconv.ParseUint(value, 10, 0)
+			if err != nil {
+				return true, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+			}
+			return true, nil
+		case reflect.Int32:
+			v, err := strconv.ParseInt(value, 10, 0)
+			if err != nil {
+				return true, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+			}
+			values[tf.Name] = int32(v)
+			return true, nil
+		case reflect.Float64:
+			values[tf.Name], err = strconv.ParseFloat(value, 64)
+			if err != nil {
+				return true, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+			}
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
 func envToValues(ctx context.Context, data interface{}, environ []string) (map[string]interface{}, error) {
 	var err error
 	envValues := make(map[string]string)
@@ -96,7 +158,14 @@ func envToValues(ctx context.Context, data interface{}, environ []string) (map[s
 			}
 			values[tf.Name] = duration.Duration()
 		default:
-			return nil, errors.Errorf(ctx, "field %s with type %T is unsupported", tf.Name, ef.Interface())
+			// Check if it's a custom type with underlying primitive type
+			if handled, err := handleCustomTypeEnv(ctx, values, tf, ef, value); handled {
+				if err != nil {
+					return nil, err
+				}
+			} else {
+				return nil, errors.Errorf(ctx, "field %s with type %T is unsupported", tf.Name, ef.Interface())
+			}
 		}
 	}
 	return values, nil

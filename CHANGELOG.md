@@ -8,6 +8,16 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.4.0
+
+- Add support for custom types with underlying primitive types (e.g., `type Username string`)
+- Support custom types in all parsing modes: command-line arguments, environment variables, and defaults
+- Add custom type support to ValidateRequired function for proper required field validation
+- Enhance test coverage with 42 new tests across all parsing methods and validation
+- Add integration tests using gexec to validate end-to-end executable behavior
+- Update README documentation with custom types examples and usage patterns
+- Improve code coverage from 82.2% to 85.4%
+
 ## v2.3.2
 
 - Enhance README with comprehensive documentation, examples, and badges

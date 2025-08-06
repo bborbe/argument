@@ -363,4 +363,95 @@ var _ = Describe("Parse", func() {
 		// because it requires JSON encoding/decoding to fail after successful
 		// reflection setup, which is rare with normal struct types
 	})
+
+	Context("Custom types support", func() {
+		type Username string
+		type Port int
+		type IsActive bool
+		type Rate float64
+
+		It("parses custom string type from arguments", func() {
+			var args struct {
+				Username Username `arg:"user" env:"USER" default:"defaultUser"`
+			}
+			os.Args = []string{"go", "-user=customUser"}
+
+			err := argument.Parse(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(string(args.Username)).To(Equal("customUser"))
+		})
+
+		It("parses custom string type from environment", func() {
+			var args struct {
+				Username Username `arg:"user" env:"USER" default:"defaultUser"`
+			}
+			_ = os.Setenv("USER", "envUser")
+			os.Args = []string{"go"}
+
+			err := argument.Parse(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(string(args.Username)).To(Equal("envUser"))
+		})
+
+		It("parses custom string type from default", func() {
+			var args struct {
+				Username Username `arg:"user" env:"USER" default:"defaultUser"`
+			}
+			os.Args = []string{"go"}
+
+			err := argument.Parse(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(string(args.Username)).To(Equal("defaultUser"))
+		})
+
+		It("parses custom int type from arguments", func() {
+			var args struct {
+				Port Port `arg:"port" env:"PORT" default:"8080"`
+			}
+			os.Args = []string{"go", "-port=9090"}
+
+			err := argument.Parse(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(int(args.Port)).To(Equal(9090))
+		})
+
+		It("parses custom bool type from arguments", func() {
+			var args struct {
+				IsActive IsActive `arg:"active" env:"ACTIVE" default:"false"`
+			}
+			os.Args = []string{"go", "-active=true"}
+
+			err := argument.Parse(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(bool(args.IsActive)).To(BeTrue())
+		})
+
+		It("parses custom float64 type from arguments", func() {
+			var args struct {
+				Rate Rate `arg:"rate" env:"RATE" default:"1.0"`
+			}
+			os.Args = []string{"go", "-rate=3.14"}
+
+			err := argument.Parse(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(float64(args.Rate)).To(Equal(3.14))
+		})
+
+		It("handles custom types with ParseAndPrint", func() {
+			var args struct {
+				Username Username `arg:"user" env:"USER" default:"defaultUser"`
+				Port     Port     `arg:"port" env:"PORT" default:"8080"`
+				IsActive IsActive `arg:"active" env:"ACTIVE" default:"false"`
+				Rate     Rate     `arg:"rate" env:"RATE" default:"1.0"`
+			}
+			os.Args = []string{"go", "-user=testUser", "-port=9000", "-active=true", "-rate=2.5"}
+
+			err := argument.ParseAndPrint(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(string(args.Username)).To(Equal("testUser"))
+			Expect(int(args.Port)).To(Equal(9000))
+			Expect(bool(args.IsActive)).To(BeTrue())
+			Expect(float64(args.Rate)).To(Equal(2.5))
+		})
+	})
 })

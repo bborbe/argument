@@ -323,4 +323,74 @@ var _ = Describe("DefaultValues", func() {
 			Expect(value).To(Equal(123.45))
 		})
 	})
+
+	Context("Custom types support", func() {
+		type Username string
+		type Port int
+		type IsActive bool
+		type Rate float64
+
+		It("handles custom string type default", func() {
+			var args struct {
+				Username Username `default:"user"`
+			}
+			data, err := argument.DefaultValues(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(data).To(HaveKeyWithValue("Username", "user"))
+		})
+
+		It("handles custom int type default", func() {
+			var args struct {
+				Port Port `default:"8080"`
+			}
+			data, err := argument.DefaultValues(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(data).To(HaveKeyWithValue("Port", 8080))
+		})
+
+		It("handles custom bool type default", func() {
+			var args struct {
+				IsActive IsActive `default:"true"`
+			}
+			data, err := argument.DefaultValues(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(data).To(HaveKeyWithValue("IsActive", true))
+		})
+
+		It("handles custom float64 type default", func() {
+			var args struct {
+				Rate Rate `default:"3.14"`
+			}
+			data, err := argument.DefaultValues(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(data).To(HaveKeyWithValue("Rate", 3.14))
+		})
+
+		It("returns error for malformed custom int type default", func() {
+			var args struct {
+				Port Port `default:"not-a-number"`
+			}
+			data, err := argument.DefaultValues(ctx, &args)
+			Expect(err).To(HaveOccurred())
+			Expect(data).To(BeNil())
+		})
+
+		It("returns error for malformed custom bool type default", func() {
+			var args struct {
+				IsActive IsActive `default:"maybe"`
+			}
+			data, err := argument.DefaultValues(ctx, &args)
+			Expect(err).To(HaveOccurred())
+			Expect(data).To(BeNil())
+		})
+
+		It("returns error for malformed custom float64 type default", func() {
+			var args struct {
+				Rate Rate `default:"not-a-number"`
+			}
+			data, err := argument.DefaultValues(ctx, &args)
+			Expect(err).To(HaveOccurred())
+			Expect(data).To(BeNil())
+		})
+	})
 })

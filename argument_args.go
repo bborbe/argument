@@ -27,6 +27,52 @@ func ParseArgs(ctx context.Context, data interface{}, args []string) error {
 	return nil
 }
 
+func handleCustomType(ctx context.Context, values map[string]interface{}, tf reflect.StructField, ef reflect.Value, argName, defaultString string, found bool, usage string) (bool, error) {
+	// Get the underlying type
+	underlyingType := ef.Type()
+	for underlyingType.Kind() == reflect.Ptr {
+		underlyingType = underlyingType.Elem()
+	}
+
+	// Check if it's a named type (custom type) with an underlying primitive type
+	if underlyingType.PkgPath() != "" && underlyingType.Kind() != reflect.Struct {
+		switch underlyingType.Kind() {
+		case reflect.String:
+			values[tf.Name] = flag.CommandLine.String(argName, defaultString, usage)
+			return true, nil
+		case reflect.Bool:
+			defaultValue, _ := strconv.ParseBool(defaultString)
+			values[tf.Name] = flag.CommandLine.Bool(argName, defaultValue, usage)
+			return true, nil
+		case reflect.Int:
+			defaultValue, _ := strconv.Atoi(defaultString)
+			values[tf.Name] = flag.CommandLine.Int(argName, defaultValue, usage)
+			return true, nil
+		case reflect.Int64:
+			defaultValue, _ := strconv.ParseInt(defaultString, 10, 0)
+			values[tf.Name] = flag.CommandLine.Int64(argName, defaultValue, usage)
+			return true, nil
+		case reflect.Uint:
+			defaultValue, _ := strconv.ParseUint(defaultString, 10, 0)
+			values[tf.Name] = flag.CommandLine.Uint(argName, uint(defaultValue), usage)
+			return true, nil
+		case reflect.Uint64:
+			defaultValue, _ := strconv.ParseUint(defaultString, 10, 0)
+			values[tf.Name] = flag.CommandLine.Uint64(argName, defaultValue, usage)
+			return true, nil
+		case reflect.Int32:
+			defaultValue, _ := strconv.ParseInt(defaultString, 10, 0)
+			values[tf.Name] = flag.CommandLine.Int(argName, int(defaultValue), usage)
+			return true, nil
+		case reflect.Float64:
+			defaultValue, _ := strconv.ParseFloat(defaultString, 64)
+			values[tf.Name] = flag.CommandLine.Float64(argName, defaultValue, usage)
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
 func argsToValues(ctx context.Context, data interface{}, args []string) (map[string]interface{}, error) {
 	e := reflect.ValueOf(data).Elem()
 	t := e.Type()
@@ -99,7 +145,14 @@ func argsToValues(ctx context.Context, data interface{}, args []string) (map[str
 				return nil
 			})
 		default:
-			return nil, errors.Errorf(ctx, "field %s with type %T is unsupported", tf.Name, ef.Interface())
+			// Check if it's a custom type with underlying primitive type
+			if handled, err := handleCustomType(ctx, values, tf, ef, argName, defaultString, found, usage); handled {
+				if err != nil {
+					return nil, err
+				}
+			} else {
+				return nil, errors.Errorf(ctx, "field %s with type %T is unsupported", tf.Name, ef.Interface())
+			}
 		}
 	}
 	if err := flag.CommandLine.Parse(args); err != nil {

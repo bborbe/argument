@@ -334,4 +334,114 @@ var _ = Describe("ParseEnv", func() {
 		// because it requires JSON encoding/decoding to fail after successful
 		// reflection setup, which is rare with normal struct types
 	})
+
+	Context("Custom types support", func() {
+		type Username string
+		type Port int
+		type IsActive bool
+		type Rate float64
+
+		It("parses custom string type from environment", func() {
+			var args struct {
+				Username Username `env:"user"`
+			}
+			err := argument.ParseEnv(ctx, &args, []string{"user=customUser"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(string(args.Username)).To(Equal("customUser"))
+		})
+
+		It("parses custom int type from environment", func() {
+			var args struct {
+				Port Port `env:"port"`
+			}
+			err := argument.ParseEnv(ctx, &args, []string{"port=8080"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(int(args.Port)).To(Equal(8080))
+		})
+
+		It("parses custom bool type from environment", func() {
+			var args struct {
+				IsActive IsActive `env:"active"`
+			}
+			err := argument.ParseEnv(ctx, &args, []string{"active=true"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(bool(args.IsActive)).To(BeTrue())
+		})
+
+		It("parses custom float64 type from environment", func() {
+			var args struct {
+				Rate Rate `env:"rate"`
+			}
+			err := argument.ParseEnv(ctx, &args, []string{"rate=3.14"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(float64(args.Rate)).To(Equal(3.14))
+		})
+
+		It("returns error for malformed custom int type", func() {
+			var args struct {
+				Port Port `env:"port"`
+			}
+			err := argument.ParseEnv(ctx, &args, []string{"port=not-a-number"})
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("parse field Port"))
+		})
+
+		It("returns error for malformed custom bool type", func() {
+			var args struct {
+				IsActive IsActive `env:"active"`
+			}
+			err := argument.ParseEnv(ctx, &args, []string{"active=maybe"})
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("parse field IsActive"))
+		})
+
+		It("returns error for malformed custom float64 type", func() {
+			var args struct {
+				Rate Rate `env:"rate"`
+			}
+			err := argument.ParseEnv(ctx, &args, []string{"rate=not-a-float"})
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("parse field Rate"))
+		})
+
+		It("handles multiple custom types together", func() {
+			var args struct {
+				Username Username `env:"user"`
+				Port     Port     `env:"port"`
+				IsActive IsActive `env:"active"`
+				Rate     Rate     `env:"rate"`
+			}
+			err := argument.ParseEnv(ctx, &args, []string{
+				"user=testUser",
+				"port=9000",
+				"active=true",
+				"rate=2.5",
+			})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(string(args.Username)).To(Equal("testUser"))
+			Expect(int(args.Port)).To(Equal(9000))
+			Expect(bool(args.IsActive)).To(BeTrue())
+			Expect(float64(args.Rate)).To(Equal(2.5))
+		})
+
+		It("handles empty values for custom string types", func() {
+			var args struct {
+				Username Username `env:"user"`
+			}
+			err := argument.ParseEnv(ctx, &args, []string{"user="})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(string(args.Username)).To(Equal(""))
+		})
+
+		It("handles negative values for custom numeric types", func() {
+			var args struct {
+				Port Port `env:"port"`
+				Rate Rate `env:"rate"`
+			}
+			err := argument.ParseEnv(ctx, &args, []string{"port=-8080", "rate=-1.5"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(int(args.Port)).To(Equal(-8080))
+			Expect(float64(args.Rate)).To(Equal(-1.5))
+		})
+	})
 })

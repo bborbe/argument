@@ -487,4 +487,123 @@ var _ = Describe("ParseArgs", func() {
 		// because it requires JSON encoding/decoding to fail after successful
 		// reflection setup, which is rare with normal struct types
 	})
+
+	Context("Custom types support", func() {
+		type Username string
+		type Port int
+		type IsActive bool
+		type Rate float64
+
+		It("parses custom string type from arguments", func() {
+			var args struct {
+				Username Username `arg:"user"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-user=customUser"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(string(args.Username)).To(Equal("customUser"))
+		})
+
+		It("parses custom string type from default", func() {
+			var args struct {
+				Username Username `arg:"user" default:"defaultUser"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(string(args.Username)).To(Equal("defaultUser"))
+		})
+
+		It("parses custom int type from arguments", func() {
+			var args struct {
+				Port Port `arg:"port"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-port=8080"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(int(args.Port)).To(Equal(8080))
+		})
+
+		It("parses custom int type from default", func() {
+			var args struct {
+				Port Port `arg:"port" default:"9000"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(int(args.Port)).To(Equal(9000))
+		})
+
+		It("parses custom bool type from arguments", func() {
+			var args struct {
+				IsActive IsActive `arg:"active"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-active=true"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(bool(args.IsActive)).To(BeTrue())
+		})
+
+		It("parses custom bool type from default", func() {
+			var args struct {
+				IsActive IsActive `arg:"active" default:"true"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(bool(args.IsActive)).To(BeTrue())
+		})
+
+		It("parses custom float64 type from arguments", func() {
+			var args struct {
+				Rate Rate `arg:"rate"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-rate=3.14"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(float64(args.Rate)).To(Equal(3.14))
+		})
+
+		It("parses custom float64 type from default", func() {
+			var args struct {
+				Rate Rate `arg:"rate" default:"2.5"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(float64(args.Rate)).To(Equal(2.5))
+		})
+
+		It("handles multiple custom types together", func() {
+			var args struct {
+				Username Username `arg:"user" default:"defaultUser"`
+				Port     Port     `arg:"port" default:"8080"`
+				IsActive IsActive `arg:"active" default:"false"`
+				Rate     Rate     `arg:"rate" default:"1.0"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{
+				"-user=testUser",
+				"-port=9000",
+				"-active=true",
+				"-rate=2.5",
+			})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(string(args.Username)).To(Equal("testUser"))
+			Expect(int(args.Port)).To(Equal(9000))
+			Expect(bool(args.IsActive)).To(BeTrue())
+			Expect(float64(args.Rate)).To(Equal(2.5))
+		})
+
+		It("handles negative values for custom numeric types", func() {
+			var args struct {
+				Port Port `arg:"port"`
+				Rate Rate `arg:"rate"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-port=-8080", "-rate=-1.5"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(int(args.Port)).To(Equal(-8080))
+			Expect(float64(args.Rate)).To(Equal(-1.5))
+		})
+
+		It("handles boolean flag style for custom bool types", func() {
+			var args struct {
+				IsActive IsActive `arg:"active"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-active"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(bool(args.IsActive)).To(BeTrue())
+		})
+	})
 })

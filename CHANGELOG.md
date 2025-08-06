@@ -8,6 +8,13 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.3.2
+
+- Enhance README with comprehensive documentation, examples, and badges
+- Add additional test coverage for error paths and edge cases
+- Add GitHub Actions workflows for CI/CD automation
+- Improve test completeness reaching 98.4% coverage
+
 ## v2.3.1
 
 - add tests

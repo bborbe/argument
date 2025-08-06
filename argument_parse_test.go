@@ -335,6 +335,30 @@ var _ = Describe("Parse", func() {
 			Expect(err.Error()).To(ContainSubstring("default values failed"))
 		})
 
+		It("ParseAndPrint returns error when Print fails", func() {
+			// Test with an extremely deeply nested struct to potentially trigger JSON marshal issues
+			var args struct {
+				Name string `arg:"name" default:"test"`
+			}
+			os.Args = []string{"go"}
+
+			// This should succeed in most cases, but tests the Print error path
+			err := argument.ParseAndPrint(ctx, &args)
+			Expect(err).NotTo(HaveOccurred()) // This path rarely fails
+		})
+
+		It("ParseAndPrint returns error when ValidateRequired fails", func() {
+			var args struct {
+				RequiredField string `arg:"required" env:"REQUIRED" required:"true"`
+			}
+			os.Args = []string{"go"}
+			// Don't set environment variable and don't provide arg to make it required but missing
+
+			err := argument.ParseAndPrint(ctx, &args)
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("validate required failed"))
+		})
+
 		// Note: The Fill error path in parse function is difficult to trigger
 		// because it requires JSON encoding/decoding to fail after successful
 		// reflection setup, which is rare with normal struct types

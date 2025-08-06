@@ -8,6 +8,11 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.4.1
+
+- Fix integration test timeouts for CI environment compatibility
+- Improve gexec test robustness with 30-second timeout configuration
+
 ## v2.4.0
 
 - Add support for custom types with underlying primitive types (e.g., `type Username string`)

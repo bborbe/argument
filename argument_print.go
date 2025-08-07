@@ -22,7 +22,11 @@ func Print(ctx context.Context, data interface{}) error {
 			continue
 		}
 		if argName == "length" {
-			log.Printf("Argument: %s length %d", t.Field(i).Name, len(fmt.Sprintf("%v", ef.Interface())))
+			log.Printf(
+				"Argument: %s length %d",
+				t.Field(i).Name,
+				len(fmt.Sprintf("%v", ef.Interface())),
+			)
 			continue
 		}
 		if ef.Kind() == reflect.Ptr || ef.Kind() == reflect.Interface {

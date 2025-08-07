@@ -27,7 +27,15 @@ func ParseArgs(ctx context.Context, data interface{}, args []string) error {
 	return nil
 }
 
-func handleCustomType(ctx context.Context, values map[string]interface{}, tf reflect.StructField, ef reflect.Value, argName, defaultString string, found bool, usage string) (bool, error) {
+func handleCustomType(
+	ctx context.Context,
+	values map[string]interface{},
+	tf reflect.StructField,
+	ef reflect.Value,
+	argName, defaultString string,
+	found bool,
+	usage string,
+) (bool, error) {
 	// Get the underlying type
 	underlyingType := ef.Type()
 	for underlyingType.Kind() == reflect.Ptr {
@@ -73,7 +81,11 @@ func handleCustomType(ctx context.Context, values map[string]interface{}, tf ref
 	return false, nil
 }
 
-func argsToValues(ctx context.Context, data interface{}, args []string) (map[string]interface{}, error) {
+func argsToValues(
+	ctx context.Context,
+	data interface{},
+	args []string,
+) (map[string]interface{}, error) {
 	e := reflect.ValueOf(data).Elem()
 	t := e.Type()
 	values := make(map[string]interface{})

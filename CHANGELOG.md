@@ -8,6 +8,13 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.4.2
+
+- Improve code formatting with better function parameter layout
+- Add golines dependency for automated line length formatting
+- Update build tools and dependencies for enhanced code quality
+- Enhance test coverage and code structure improvements
+
 ## v2.4.1
 
 - Fix integration test timeouts for CI environment compatibility

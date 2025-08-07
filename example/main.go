@@ -13,7 +13,9 @@ import (
 )
 
 type Username string
+
 type Password string
+
 type Active bool
 
 func main() {

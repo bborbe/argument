@@ -368,7 +368,11 @@ var _ = Describe("ParseArgs", func() {
 				Amount float64 `arg:"amount"`
 				Active bool    `arg:"active"`
 			}
-			err := argument.ParseArgs(ctx, &args, []string{"-count=0", "-amount=0.0", "-active=false"})
+			err := argument.ParseArgs(
+				ctx,
+				&args,
+				[]string{"-count=0", "-amount=0.0", "-active=false"},
+			)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(args.Count).To(Equal(0))
 			Expect(args.Amount).To(Equal(0.0))

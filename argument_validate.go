@@ -14,7 +14,12 @@ import (
 	"github.com/bborbe/errors"
 )
 
-func handleCustomTypeValidation(ctx context.Context, tf reflect.StructField, ef reflect.Value, createError func() error) (bool, error) {
+func handleCustomTypeValidation(
+	ctx context.Context,
+	tf reflect.StructField,
+	ef reflect.Value,
+	createError func() error,
+) (bool, error) {
 	// Get the underlying type
 	underlyingType := ef.Type()
 	for underlyingType.Kind() == reflect.Ptr {

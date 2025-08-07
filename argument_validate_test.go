@@ -47,7 +47,9 @@ var _ = Describe("Required", func() {
 		}
 		err := argument.ValidateRequired(ctx, &args)
 		Expect(err).To(HaveOccurred())
-		Expect(err.Error()).To(Equal("Required field empty, define parameter abc or define env abc"))
+		Expect(
+			err.Error(),
+		).To(Equal("Required field empty, define parameter abc or define env abc"))
 	})
 	It("returns no error if nothing is required", func() {
 		args := struct {
@@ -325,7 +327,9 @@ var _ = Describe("Required", func() {
 			}
 			err := argument.ValidateRequired(ctx, &args)
 			Expect(err).To(HaveOccurred())
-			Expect(err.Error()).To(Equal("Required field empty, define parameter rate or define env RATE"))
+			Expect(
+				err.Error(),
+			).To(Equal("Required field empty, define parameter rate or define env RATE"))
 		})
 
 		It("returns no error if required custom float64 type is not empty", func() {

@@ -8,6 +8,15 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.4.3
+
+- Upgrade to Go 1.25.2
+- Add golangci-lint configuration for enhanced code quality checks
+- Add security scanning tools (osv-scanner, gosec, trivy) to build pipeline
+- Enhance CI workflow with Trivy installation step
+- Improve Makefile with additional quality and security check targets
+- Update dependencies and development tools
+
 ## v2.4.2
 
 - Improve code formatting with better function parameter layout

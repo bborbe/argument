@@ -14,7 +14,15 @@ import (
 	libtime "github.com/bborbe/time"
 )
 
-// ParseEnv into the given struct.
+// ParseEnv parses environment variables into the given struct using env struct tags.
+// See Parse() documentation for supported types and struct tag options.
+//
+// Parameters:
+//   - ctx: Context for error handling
+//   - data: Pointer to struct with env tags
+//   - environ: Environment variables (typically os.Environ())
+//
+// Returns error if parsing fails.
 func ParseEnv(ctx context.Context, data interface{}, environ []string) error {
 	values, err := envToValues(ctx, data, environ)
 	if err != nil {
@@ -209,6 +217,72 @@ func envToValues(
 				return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
 			}
 			values[tf.Name] = duration.Duration()
+		case time.Time:
+			t, err := libtime.ParseTime(ctx, value)
+			if err != nil {
+				return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+			}
+			values[tf.Name] = *t
+		case *time.Time:
+			t, err := libtime.ParseTime(ctx, value)
+			if err != nil {
+				return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+			}
+			values[tf.Name] = *t
+		case *time.Duration:
+			duration, err := libtime.ParseDuration(ctx, value)
+			if err != nil {
+				return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+			}
+			values[tf.Name] = duration.Duration()
+		case libtime.Duration:
+			duration, err := libtime.ParseDuration(ctx, value)
+			if err != nil {
+				return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+			}
+			values[tf.Name] = *duration
+		case *libtime.Duration:
+			duration, err := libtime.ParseDuration(ctx, value)
+			if err != nil {
+				return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+			}
+			values[tf.Name] = *duration
+		case libtime.DateTime:
+			dateTime, err := libtime.ParseDateTime(ctx, value)
+			if err != nil {
+				return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+			}
+			values[tf.Name] = *dateTime
+		case *libtime.DateTime:
+			dateTime, err := libtime.ParseDateTime(ctx, value)
+			if err != nil {
+				return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+			}
+			values[tf.Name] = *dateTime
+		case libtime.Date:
+			date, err := libtime.ParseDate(ctx, value)
+			if err != nil {
+				return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+			}
+			values[tf.Name] = *date
+		case *libtime.Date:
+			date, err := libtime.ParseDate(ctx, value)
+			if err != nil {
+				return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+			}
+			values[tf.Name] = *date
+		case libtime.UnixTime:
+			unixTime, err := libtime.ParseUnixTime(ctx, value)
+			if err != nil {
+				return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+			}
+			values[tf.Name] = *unixTime
+		case *libtime.UnixTime:
+			unixTime, err := libtime.ParseUnixTime(ctx, value)
+			if err != nil {
+				return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+			}
+			values[tf.Name] = *unixTime
 		default:
 			// Check if it's a custom type with underlying primitive type
 			if handled, err := handleCustomTypeEnv(ctx, values, tf, ef, value); handled {

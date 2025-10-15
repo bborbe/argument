@@ -15,7 +15,15 @@ import (
 	libtime "github.com/bborbe/time"
 )
 
-// ParseArgs into the given struct.
+// ParseArgs parses command-line arguments into the given struct using arg struct tags.
+// See Parse() documentation for supported types and struct tag options.
+//
+// Parameters:
+//   - ctx: Context for error handling
+//   - data: Pointer to struct with arg tags
+//   - args: Command-line arguments (typically os.Args[1:])
+//
+// Returns error if parsing fails or if default values are malformed.
 func ParseArgs(ctx context.Context, data interface{}, args []string) error {
 	values, err := argsToValues(ctx, data, args)
 	if err != nil {
@@ -154,6 +162,237 @@ func argsToValues(
 					return errors.Wrapf(ctx, err, "parse duration failed")
 				}
 				values[tf.Name] = duration.Duration()
+				return nil
+			})
+		case time.Time:
+			if found {
+				defaultValue, err := libtime.ParseTime(ctx, defaultString)
+				if err != nil {
+					return nil, errors.Wrapf(ctx, err, "invalid default value %q for field %s", defaultString, tf.Name)
+				}
+				if defaultValue != nil {
+					values[tf.Name] = *defaultValue
+				}
+			}
+			flag.CommandLine.Func(argName, usage, func(value string) error {
+				if value == "" {
+					return nil
+				}
+				t, err := libtime.ParseTime(ctx, value)
+				if err != nil {
+					return errors.Wrapf(ctx, err, "parse time failed")
+				}
+				values[tf.Name] = *t
+				return nil
+			})
+		case *time.Time:
+			if found {
+				defaultValue, err := libtime.ParseTime(ctx, defaultString)
+				if err != nil {
+					return nil, errors.Wrapf(ctx, err, "invalid default value %q for field %s", defaultString, tf.Name)
+				}
+				if defaultValue != nil {
+					values[tf.Name] = *defaultValue
+				}
+			}
+			flag.CommandLine.Func(argName, usage, func(value string) error {
+				if value == "" {
+					return nil
+				}
+				t, err := libtime.ParseTime(ctx, value)
+				if err != nil {
+					return errors.Wrapf(ctx, err, "parse time failed")
+				}
+				values[tf.Name] = *t
+				return nil
+			})
+		case *time.Duration:
+			if found {
+				defaultValue, err := libtime.ParseDuration(ctx, defaultString)
+				if err != nil {
+					return nil, errors.Wrapf(ctx, err, "invalid default value %q for field %s", defaultString, tf.Name)
+				}
+				if defaultValue != nil {
+					values[tf.Name] = defaultValue.Duration()
+				}
+			}
+			flag.CommandLine.Func(argName, usage, func(value string) error {
+				if value == "" {
+					return nil
+				}
+				duration, err := libtime.ParseDuration(ctx, value)
+				if err != nil {
+					return errors.Wrapf(ctx, err, "parse duration failed")
+				}
+				values[tf.Name] = duration.Duration()
+				return nil
+			})
+		case libtime.Duration:
+			if found {
+				defaultValue, err := libtime.ParseDuration(ctx, defaultString)
+				if err != nil {
+					return nil, errors.Wrapf(ctx, err, "invalid default value %q for field %s", defaultString, tf.Name)
+				}
+				if defaultValue != nil {
+					values[tf.Name] = *defaultValue
+				}
+			}
+			flag.CommandLine.Func(argName, usage, func(value string) error {
+				if value == "" {
+					return nil
+				}
+				duration, err := libtime.ParseDuration(ctx, value)
+				if err != nil {
+					return errors.Wrapf(ctx, err, "parse duration failed")
+				}
+				values[tf.Name] = *duration
+				return nil
+			})
+		case *libtime.Duration:
+			if found {
+				defaultValue, err := libtime.ParseDuration(ctx, defaultString)
+				if err != nil {
+					return nil, errors.Wrapf(ctx, err, "invalid default value %q for field %s", defaultString, tf.Name)
+				}
+				if defaultValue != nil {
+					values[tf.Name] = *defaultValue
+				}
+			}
+			flag.CommandLine.Func(argName, usage, func(value string) error {
+				if value == "" {
+					return nil
+				}
+				duration, err := libtime.ParseDuration(ctx, value)
+				if err != nil {
+					return errors.Wrapf(ctx, err, "parse duration failed")
+				}
+				values[tf.Name] = *duration
+				return nil
+			})
+		case libtime.DateTime:
+			if found {
+				defaultValue, err := libtime.ParseDateTime(ctx, defaultString)
+				if err != nil {
+					return nil, errors.Wrapf(ctx, err, "invalid default value %q for field %s", defaultString, tf.Name)
+				}
+				if defaultValue != nil {
+					values[tf.Name] = *defaultValue
+				}
+			}
+			flag.CommandLine.Func(argName, usage, func(value string) error {
+				if value == "" {
+					return nil
+				}
+				dateTime, err := libtime.ParseDateTime(ctx, value)
+				if err != nil {
+					return errors.Wrapf(ctx, err, "parse datetime failed")
+				}
+				values[tf.Name] = *dateTime
+				return nil
+			})
+		case *libtime.DateTime:
+			if found {
+				defaultValue, err := libtime.ParseDateTime(ctx, defaultString)
+				if err != nil {
+					return nil, errors.Wrapf(ctx, err, "invalid default value %q for field %s", defaultString, tf.Name)
+				}
+				if defaultValue != nil {
+					values[tf.Name] = *defaultValue
+				}
+			}
+			flag.CommandLine.Func(argName, usage, func(value string) error {
+				if value == "" {
+					return nil
+				}
+				dateTime, err := libtime.ParseDateTime(ctx, value)
+				if err != nil {
+					return errors.Wrapf(ctx, err, "parse datetime failed")
+				}
+				values[tf.Name] = *dateTime
+				return nil
+			})
+		case libtime.Date:
+			if found {
+				defaultValue, err := libtime.ParseDate(ctx, defaultString)
+				if err != nil {
+					return nil, errors.Wrapf(ctx, err, "invalid default value %q for field %s", defaultString, tf.Name)
+				}
+				if defaultValue != nil {
+					values[tf.Name] = *defaultValue
+				}
+			}
+			flag.CommandLine.Func(argName, usage, func(value string) error {
+				if value == "" {
+					return nil
+				}
+				date, err := libtime.ParseDate(ctx, value)
+				if err != nil {
+					return errors.Wrapf(ctx, err, "parse date failed")
+				}
+				values[tf.Name] = *date
+				return nil
+			})
+		case *libtime.Date:
+			if found {
+				defaultValue, err := libtime.ParseDate(ctx, defaultString)
+				if err != nil {
+					return nil, errors.Wrapf(ctx, err, "invalid default value %q for field %s", defaultString, tf.Name)
+				}
+				if defaultValue != nil {
+					values[tf.Name] = *defaultValue
+				}
+			}
+			flag.CommandLine.Func(argName, usage, func(value string) error {
+				if value == "" {
+					return nil
+				}
+				date, err := libtime.ParseDate(ctx, value)
+				if err != nil {
+					return errors.Wrapf(ctx, err, "parse date failed")
+				}
+				values[tf.Name] = *date
+				return nil
+			})
+		case libtime.UnixTime:
+			if found {
+				defaultValue, err := libtime.ParseUnixTime(ctx, defaultString)
+				if err != nil {
+					return nil, errors.Wrapf(ctx, err, "invalid default value %q for field %s", defaultString, tf.Name)
+				}
+				if defaultValue != nil {
+					values[tf.Name] = *defaultValue
+				}
+			}
+			flag.CommandLine.Func(argName, usage, func(value string) error {
+				if value == "" {
+					return nil
+				}
+				unixTime, err := libtime.ParseUnixTime(ctx, value)
+				if err != nil {
+					return errors.Wrapf(ctx, err, "parse unixtime failed")
+				}
+				values[tf.Name] = *unixTime
+				return nil
+			})
+		case *libtime.UnixTime:
+			if found {
+				defaultValue, err := libtime.ParseUnixTime(ctx, defaultString)
+				if err != nil {
+					return nil, errors.Wrapf(ctx, err, "invalid default value %q for field %s", defaultString, tf.Name)
+				}
+				if defaultValue != nil {
+					values[tf.Name] = *defaultValue
+				}
+			}
+			flag.CommandLine.Func(argName, usage, func(value string) error {
+				if value == "" {
+					return nil
+				}
+				unixTime, err := libtime.ParseUnixTime(ctx, value)
+				if err != nil {
+					return errors.Wrapf(ctx, err, "parse unixtime failed")
+				}
+				values[tf.Name] = *unixTime
 				return nil
 			})
 		default:

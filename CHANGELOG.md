@@ -8,6 +8,19 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.5.0
+
+- Add support for time.Time and *time.Time types with RFC3339 format parsing
+- Add support for *time.Duration pointer type for optional duration values
+- Add support for libtime.Duration and *libtime.Duration with extended format (weeks, days)
+- Add support for libtime.DateTime and *libtime.DateTime for timestamp parsing
+- Add support for libtime.Date and *libtime.Date for date-only parsing
+- Add support for libtime.UnixTime and *libtime.UnixTime for Unix timestamp parsing
+- Add comprehensive documentation for Parse, ParseArgs, and ParseEnv functions
+- Add 44 new tests covering all time types and pointer variants
+- Fix silent error swallowing in default value parsing - now returns descriptive errors
+- Improve test coverage from 86.9% to include all time type scenarios
+
 ## v2.4.3
 
 - Upgrade to Go 1.25.2

@@ -11,6 +11,7 @@ import (
 	"os"
 	"time"
 
+	libtime "github.com/bborbe/time"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -608,6 +609,489 @@ var _ = Describe("ParseArgs", func() {
 			err := argument.ParseArgs(ctx, &args, []string{"-active"})
 			Expect(err).NotTo(HaveOccurred())
 			Expect(bool(args.IsActive)).To(BeTrue())
+		})
+	})
+
+	Context("time.Time support", func() {
+		It("parses time.Time from arguments", func() {
+			var args struct {
+				Timestamp time.Time `arg:"timestamp"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-timestamp=2023-12-25T10:30:00Z"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Timestamp.Year()).To(Equal(2023))
+			Expect(args.Timestamp.Month()).To(Equal(time.December))
+			Expect(args.Timestamp.Day()).To(Equal(25))
+			Expect(args.Timestamp.Hour()).To(Equal(10))
+			Expect(args.Timestamp.Minute()).To(Equal(30))
+		})
+
+		It("parses time.Time from default", func() {
+			var args struct {
+				Timestamp time.Time `arg:"timestamp" default:"2023-12-25T10:30:00Z"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Timestamp.Year()).To(Equal(2023))
+			Expect(args.Timestamp.Month()).To(Equal(time.December))
+			Expect(args.Timestamp.Day()).To(Equal(25))
+		})
+
+		It("returns error for invalid time.Time", func() {
+			var args struct {
+				Timestamp time.Time `arg:"timestamp"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-timestamp=invalid-date"})
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("handles empty time.Time argument", func() {
+			var args struct {
+				Timestamp time.Time `arg:"timestamp"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-timestamp="})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Timestamp.IsZero()).To(BeTrue())
+		})
+	})
+
+	Context("libtime types support", func() {
+		It("parses libtime.Duration from arguments", func() {
+			var args struct {
+				Wait libtime.Duration `arg:"wait"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-wait=1m"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Wait.Duration()).To(Equal(time.Minute))
+		})
+
+		It("parses libtime.Duration from default", func() {
+			var args struct {
+				Wait libtime.Duration `arg:"wait" default:"1m"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Wait.Duration()).To(Equal(time.Minute))
+		})
+
+		It("parses libtime.Duration with days", func() {
+			var args struct {
+				Period libtime.Duration `arg:"period"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-period=7d"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Period.Duration()).To(Equal(7 * 24 * time.Hour))
+		})
+
+		It("parses libtime.Duration with complex combinations", func() {
+			var args struct {
+				Period libtime.Duration `arg:"period"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-period=1d2h30m"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Period.Duration()).To(Equal(24*time.Hour + 2*time.Hour + 30*time.Minute))
+		})
+
+		It("parses libtime.DateTime from arguments", func() {
+			var args struct {
+				Timestamp libtime.DateTime `arg:"timestamp"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-timestamp=2023-12-25T10:30:00Z"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Timestamp.Year()).To(Equal(2023))
+			Expect(args.Timestamp.Month()).To(Equal(time.December))
+			Expect(args.Timestamp.Day()).To(Equal(25))
+			Expect(args.Timestamp.Hour()).To(Equal(10))
+			Expect(args.Timestamp.Minute()).To(Equal(30))
+		})
+
+		It("parses libtime.DateTime from default", func() {
+			var args struct {
+				Timestamp libtime.DateTime `arg:"timestamp" default:"2023-12-25T10:30:00Z"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Timestamp.Year()).To(Equal(2023))
+			Expect(args.Timestamp.Month()).To(Equal(time.December))
+			Expect(args.Timestamp.Day()).To(Equal(25))
+		})
+
+		It("parses libtime.Date from arguments", func() {
+			var args struct {
+				Birthday libtime.Date `arg:"birthday"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-birthday=2023-12-25"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Birthday.Year()).To(Equal(2023))
+			Expect(args.Birthday.Month()).To(Equal(time.December))
+			Expect(args.Birthday.Day()).To(Equal(25))
+		})
+
+		It("parses libtime.Date from default", func() {
+			var args struct {
+				Birthday libtime.Date `arg:"birthday" default:"2023-12-25"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Birthday.Year()).To(Equal(2023))
+			Expect(args.Birthday.Month()).To(Equal(time.December))
+			Expect(args.Birthday.Day()).To(Equal(25))
+		})
+
+		It("parses libtime.UnixTime from arguments", func() {
+			var args struct {
+				Timestamp libtime.UnixTime `arg:"timestamp"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-timestamp=1703505000"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Timestamp.Unix()).To(Equal(int64(1703505000)))
+		})
+
+		It("parses libtime.UnixTime from default", func() {
+			var args struct {
+				Timestamp libtime.UnixTime `arg:"timestamp" default:"1703505000"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Timestamp.Unix()).To(Equal(int64(1703505000)))
+		})
+
+		It("returns error for invalid libtime.Duration", func() {
+			var args struct {
+				Wait libtime.Duration `arg:"wait"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-wait=invalid"})
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("returns error for invalid libtime.DateTime", func() {
+			var args struct {
+				Timestamp libtime.DateTime `arg:"timestamp"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-timestamp=invalid-date"})
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("returns error for invalid libtime.Date", func() {
+			var args struct {
+				Birthday libtime.Date `arg:"birthday"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-birthday=not-a-date"})
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("returns error for invalid libtime.UnixTime", func() {
+			var args struct {
+				Timestamp libtime.UnixTime `arg:"timestamp"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-timestamp=not-a-timestamp"})
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("handles empty libtime.Duration argument", func() {
+			var args struct {
+				Wait libtime.Duration `arg:"wait"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-wait="})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Wait.Duration()).To(Equal(time.Duration(0)))
+		})
+
+		It("handles multiple libtime types together", func() {
+			var args struct {
+				Period    libtime.Duration `arg:"period" default:"1h"`
+				Timestamp libtime.DateTime `arg:"timestamp" default:"2023-12-25T10:30:00Z"`
+				Birthday  libtime.Date     `arg:"birthday" default:"2023-12-25"`
+				UnixTS    libtime.UnixTime `arg:"unixts" default:"1703505000"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{
+				"-period=2h30m",
+				"-timestamp=2024-01-01T00:00:00Z",
+				"-birthday=2024-01-01",
+				"-unixts=1704067200",
+			})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Period.Duration()).To(Equal(2*time.Hour + 30*time.Minute))
+			Expect(args.Timestamp.Year()).To(Equal(2024))
+			Expect(args.Birthday.Year()).To(Equal(2024))
+			Expect(args.UnixTS.Unix()).To(Equal(int64(1704067200)))
+		})
+	})
+
+	Context("pointer time types support", func() {
+		It("parses *time.Time from arguments", func() {
+			var args struct {
+				Timestamp *time.Time `arg:"timestamp"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-timestamp=2023-12-25T10:30:00Z"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Timestamp).NotTo(BeNil())
+			Expect(args.Timestamp.Year()).To(Equal(2023))
+			Expect(args.Timestamp.Month()).To(Equal(time.December))
+			Expect(args.Timestamp.Day()).To(Equal(25))
+		})
+
+		It("leaves *time.Time nil when empty", func() {
+			var args struct {
+				Timestamp *time.Time `arg:"timestamp"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-timestamp="})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Timestamp).To(BeNil())
+		})
+
+		It("parses *time.Time from default", func() {
+			var args struct {
+				Timestamp *time.Time `arg:"timestamp" default:"2023-12-25T10:30:00Z"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Timestamp).NotTo(BeNil())
+			Expect(args.Timestamp.Year()).To(Equal(2023))
+		})
+
+		It("parses *time.Duration from arguments", func() {
+			var args struct {
+				Wait *time.Duration `arg:"wait"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-wait=1h30m"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Wait).NotTo(BeNil())
+			Expect(*args.Wait).To(Equal(time.Hour + 30*time.Minute))
+		})
+
+		It("leaves *time.Duration nil when empty", func() {
+			var args struct {
+				Wait *time.Duration `arg:"wait"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-wait="})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Wait).To(BeNil())
+		})
+
+		It("parses *time.Duration from default", func() {
+			var args struct {
+				Wait *time.Duration `arg:"wait" default:"2h"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Wait).NotTo(BeNil())
+			Expect(*args.Wait).To(Equal(2 * time.Hour))
+		})
+
+		It("parses *libtime.Duration from arguments", func() {
+			var args struct {
+				Period *libtime.Duration `arg:"period"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-period=1d2h30m"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Period).NotTo(BeNil())
+			Expect(args.Period.Duration()).To(Equal(24*time.Hour + 2*time.Hour + 30*time.Minute))
+		})
+
+		It("leaves *libtime.Duration nil when empty", func() {
+			var args struct {
+				Period *libtime.Duration `arg:"period"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-period="})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Period).To(BeNil())
+		})
+
+		It("parses *libtime.Duration from default", func() {
+			var args struct {
+				Period *libtime.Duration `arg:"period" default:"3h"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Period).NotTo(BeNil())
+			Expect(args.Period.Duration()).To(Equal(3 * time.Hour))
+		})
+
+		It("parses *libtime.DateTime from arguments", func() {
+			var args struct {
+				Timestamp *libtime.DateTime `arg:"timestamp"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-timestamp=2023-12-25T10:30:00Z"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Timestamp).NotTo(BeNil())
+			Expect(args.Timestamp.Year()).To(Equal(2023))
+			Expect(args.Timestamp.Month()).To(Equal(time.December))
+			Expect(args.Timestamp.Day()).To(Equal(25))
+		})
+
+		It("leaves *libtime.DateTime nil when empty", func() {
+			var args struct {
+				Timestamp *libtime.DateTime `arg:"timestamp"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-timestamp="})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Timestamp).To(BeNil())
+		})
+
+		It("parses *libtime.DateTime from default", func() {
+			var args struct {
+				Timestamp *libtime.DateTime `arg:"timestamp" default:"2023-12-25T10:30:00Z"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Timestamp).NotTo(BeNil())
+			Expect(args.Timestamp.Year()).To(Equal(2023))
+		})
+
+		It("parses *libtime.Date from arguments", func() {
+			var args struct {
+				Birthday *libtime.Date `arg:"birthday"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-birthday=2023-12-25"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Birthday).NotTo(BeNil())
+			Expect(args.Birthday.Year()).To(Equal(2023))
+			Expect(args.Birthday.Month()).To(Equal(time.December))
+			Expect(args.Birthday.Day()).To(Equal(25))
+		})
+
+		It("leaves *libtime.Date nil when empty", func() {
+			var args struct {
+				Birthday *libtime.Date `arg:"birthday"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-birthday="})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Birthday).To(BeNil())
+		})
+
+		It("parses *libtime.Date from default", func() {
+			var args struct {
+				Birthday *libtime.Date `arg:"birthday" default:"2023-12-25"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Birthday).NotTo(BeNil())
+			Expect(args.Birthday.Year()).To(Equal(2023))
+		})
+
+		It("parses *libtime.UnixTime from arguments", func() {
+			var args struct {
+				Timestamp *libtime.UnixTime `arg:"timestamp"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-timestamp=1703505000"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Timestamp).NotTo(BeNil())
+			Expect(args.Timestamp.Unix()).To(Equal(int64(1703505000)))
+		})
+
+		It("leaves *libtime.UnixTime nil when empty", func() {
+			var args struct {
+				Timestamp *libtime.UnixTime `arg:"timestamp"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-timestamp="})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Timestamp).To(BeNil())
+		})
+
+		It("parses *libtime.UnixTime from default", func() {
+			var args struct {
+				Timestamp *libtime.UnixTime `arg:"timestamp" default:"1703505000"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Timestamp).NotTo(BeNil())
+			Expect(args.Timestamp.Unix()).To(Equal(int64(1703505000)))
+		})
+
+		It("handles multiple pointer time types together", func() {
+			var args struct {
+				StdTime  *time.Time        `arg:"stdtime"`
+				StdWait  *time.Duration    `arg:"stdwait"`
+				Period   *libtime.Duration `arg:"period"`
+				DateTime *libtime.DateTime `arg:"datetime"`
+				Date     *libtime.Date     `arg:"date"`
+				UnixTS   *libtime.UnixTime `arg:"unixts"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{
+				"-stdtime=2023-12-25T10:30:00Z",
+				"-stdwait=1h",
+				"-period=2h30m",
+				"-datetime=2024-01-01T00:00:00Z",
+				"-date=2024-01-01",
+				"-unixts=1704067200",
+			})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.StdTime).NotTo(BeNil())
+			Expect(args.StdWait).NotTo(BeNil())
+			Expect(args.Period).NotTo(BeNil())
+			Expect(args.DateTime).NotTo(BeNil())
+			Expect(args.Date).NotTo(BeNil())
+			Expect(args.UnixTS).NotTo(BeNil())
+			Expect(args.StdTime.Year()).To(Equal(2023))
+			Expect(*args.StdWait).To(Equal(time.Hour))
+			Expect(args.Period.Duration()).To(Equal(2*time.Hour + 30*time.Minute))
+			Expect(args.DateTime.Year()).To(Equal(2024))
+			Expect(args.Date.Year()).To(Equal(2024))
+			Expect(args.UnixTS.Unix()).To(Equal(int64(1704067200)))
+		})
+
+		It("handles mixed nil and non-nil pointer time types", func() {
+			var args struct {
+				Present *time.Time        `arg:"present"`
+				Absent  *libtime.Duration `arg:"absent"`
+			}
+			err := argument.ParseArgs(
+				ctx,
+				&args,
+				[]string{"-present=2023-12-25T10:30:00Z", "-absent="},
+			)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Present).NotTo(BeNil())
+			Expect(args.Absent).To(BeNil())
+		})
+
+		It("returns error for invalid *time.Time", func() {
+			var args struct {
+				Timestamp *time.Time `arg:"timestamp"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-timestamp=invalid-date"})
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("returns error for invalid *time.Duration", func() {
+			var args struct {
+				Wait *time.Duration `arg:"wait"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-wait=invalid"})
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("returns error for invalid *libtime.Duration", func() {
+			var args struct {
+				Period *libtime.Duration `arg:"period"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-period=invalid"})
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("returns error for invalid *libtime.DateTime", func() {
+			var args struct {
+				Timestamp *libtime.DateTime `arg:"timestamp"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-timestamp=invalid"})
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("returns error for invalid *libtime.Date", func() {
+			var args struct {
+				Birthday *libtime.Date `arg:"birthday"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-birthday=invalid"})
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("returns error for invalid *libtime.UnixTime", func() {
+			var args struct {
+				Timestamp *libtime.UnixTime `arg:"timestamp"`
+			}
+			err := argument.ParseArgs(ctx, &args, []string{"-timestamp=invalid"})
+			Expect(err).To(HaveOccurred())
 		})
 	})
 })

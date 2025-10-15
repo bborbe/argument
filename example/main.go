@@ -11,8 +11,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/bborbe/argument/v2"
 	libtime "github.com/bborbe/time"
+
+	"github.com/bborbe/argument/v2"
 )
 
 type Username string

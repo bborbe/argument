@@ -8,6 +8,7 @@ import (
 	"context"
 	"time"
 
+	libtime "github.com/bborbe/time"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -442,6 +443,184 @@ var _ = Describe("ParseEnv", func() {
 			Expect(err).NotTo(HaveOccurred())
 			Expect(int(args.Port)).To(Equal(-8080))
 			Expect(float64(args.Rate)).To(Equal(-1.5))
+		})
+	})
+
+	Context("time types support", func() {
+		It("parses time.Time from environment", func() {
+			var args struct {
+				Timestamp time.Time `env:"TIMESTAMP"`
+			}
+			err := argument.ParseEnv(ctx, &args, []string{"TIMESTAMP=2023-12-25T10:30:00Z"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Timestamp.Year()).To(Equal(2023))
+			Expect(args.Timestamp.Month()).To(Equal(time.December))
+			Expect(args.Timestamp.Day()).To(Equal(25))
+		})
+
+		It("returns error for invalid time.Time", func() {
+			var args struct {
+				Timestamp time.Time `env:"TIMESTAMP"`
+			}
+			err := argument.ParseEnv(ctx, &args, []string{"TIMESTAMP=invalid-date"})
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("parses *time.Time from environment", func() {
+			var args struct {
+				Timestamp *time.Time `env:"TIMESTAMP"`
+			}
+			err := argument.ParseEnv(ctx, &args, []string{"TIMESTAMP=2023-12-25T10:30:00Z"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Timestamp).NotTo(BeNil())
+			Expect(args.Timestamp.Year()).To(Equal(2023))
+		})
+
+		It("parses *time.Duration from environment", func() {
+			var args struct {
+				Wait *time.Duration `env:"WAIT"`
+			}
+			err := argument.ParseEnv(ctx, &args, []string{"WAIT=1h30m"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Wait).NotTo(BeNil())
+			Expect(*args.Wait).To(Equal(time.Hour + 30*time.Minute))
+		})
+	})
+
+	Context("libtime types support", func() {
+		It("parses libtime.Duration from environment", func() {
+			var args struct {
+				Period libtime.Duration `env:"PERIOD"`
+			}
+			err := argument.ParseEnv(ctx, &args, []string{"PERIOD=1d2h30m"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Period.Duration()).To(Equal(24*time.Hour + 2*time.Hour + 30*time.Minute))
+		})
+
+		It("parses *libtime.Duration from environment", func() {
+			var args struct {
+				Period *libtime.Duration `env:"PERIOD"`
+			}
+			err := argument.ParseEnv(ctx, &args, []string{"PERIOD=2w"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Period).NotTo(BeNil())
+			Expect(args.Period.Duration()).To(Equal(14 * 24 * time.Hour))
+		})
+
+		It("parses libtime.DateTime from environment", func() {
+			var args struct {
+				Timestamp libtime.DateTime `env:"TIMESTAMP"`
+			}
+			err := argument.ParseEnv(ctx, &args, []string{"TIMESTAMP=2023-12-25T10:30:00Z"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Timestamp.Year()).To(Equal(2023))
+			Expect(args.Timestamp.Month()).To(Equal(time.December))
+			Expect(args.Timestamp.Day()).To(Equal(25))
+		})
+
+		It("parses *libtime.DateTime from environment", func() {
+			var args struct {
+				Timestamp *libtime.DateTime `env:"TIMESTAMP"`
+			}
+			err := argument.ParseEnv(ctx, &args, []string{"TIMESTAMP=2024-01-01T00:00:00Z"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Timestamp).NotTo(BeNil())
+			Expect(args.Timestamp.Year()).To(Equal(2024))
+		})
+
+		It("parses libtime.Date from environment", func() {
+			var args struct {
+				Birthday libtime.Date `env:"BIRTHDAY"`
+			}
+			err := argument.ParseEnv(ctx, &args, []string{"BIRTHDAY=2023-12-25"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Birthday.Year()).To(Equal(2023))
+			Expect(args.Birthday.Month()).To(Equal(time.December))
+			Expect(args.Birthday.Day()).To(Equal(25))
+		})
+
+		It("parses *libtime.Date from environment", func() {
+			var args struct {
+				Birthday *libtime.Date `env:"BIRTHDAY"`
+			}
+			err := argument.ParseEnv(ctx, &args, []string{"BIRTHDAY=2024-01-01"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Birthday).NotTo(BeNil())
+			Expect(args.Birthday.Year()).To(Equal(2024))
+		})
+
+		It("parses libtime.UnixTime from environment", func() {
+			var args struct {
+				Timestamp libtime.UnixTime `env:"TIMESTAMP"`
+			}
+			err := argument.ParseEnv(ctx, &args, []string{"TIMESTAMP=1703505000"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Timestamp.Unix()).To(Equal(int64(1703505000)))
+		})
+
+		It("parses *libtime.UnixTime from environment", func() {
+			var args struct {
+				Timestamp *libtime.UnixTime `env:"TIMESTAMP"`
+			}
+			err := argument.ParseEnv(ctx, &args, []string{"TIMESTAMP=1704067200"})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Timestamp).NotTo(BeNil())
+			Expect(args.Timestamp.Unix()).To(Equal(int64(1704067200)))
+		})
+
+		It("returns error for invalid libtime.Duration", func() {
+			var args struct {
+				Period libtime.Duration `env:"PERIOD"`
+			}
+			err := argument.ParseEnv(ctx, &args, []string{"PERIOD=invalid"})
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("returns error for invalid libtime.DateTime", func() {
+			var args struct {
+				Timestamp libtime.DateTime `env:"TIMESTAMP"`
+			}
+			err := argument.ParseEnv(ctx, &args, []string{"TIMESTAMP=invalid"})
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("returns error for invalid libtime.Date", func() {
+			var args struct {
+				Birthday libtime.Date `env:"BIRTHDAY"`
+			}
+			err := argument.ParseEnv(ctx, &args, []string{"BIRTHDAY=not-a-date"})
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("returns error for invalid libtime.UnixTime", func() {
+			var args struct {
+				Timestamp libtime.UnixTime `env:"TIMESTAMP"`
+			}
+			err := argument.ParseEnv(ctx, &args, []string{"TIMESTAMP=not-a-timestamp"})
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("handles multiple time types together", func() {
+			var args struct {
+				StdTime  time.Time        `env:"STD_TIME"`
+				Period   libtime.Duration `env:"PERIOD"`
+				DateTime libtime.DateTime `env:"DATETIME"`
+				Date     libtime.Date     `env:"DATE"`
+				UnixTS   libtime.UnixTime `env:"UNIXTS"`
+			}
+			err := argument.ParseEnv(ctx, &args, []string{
+				"STD_TIME=2023-12-25T10:30:00Z",
+				"PERIOD=1d2h",
+				"DATETIME=2024-01-01T00:00:00Z",
+				"DATE=2024-01-01",
+				"UNIXTS=1704067200",
+			})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.StdTime.Year()).To(Equal(2023))
+			Expect(args.Period.Duration()).To(Equal(24*time.Hour + 2*time.Hour))
+			Expect(args.DateTime.Year()).To(Equal(2024))
+			Expect(args.Date.Year()).To(Equal(2024))
+			Expect(args.UnixTS.Unix()).To(Equal(int64(1704067200)))
 		})
 	})
 })

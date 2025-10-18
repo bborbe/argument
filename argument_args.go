@@ -513,7 +513,34 @@ func argsToValues(
 				return nil
 			})
 		default:
-			// Check if it's a slice type
+			// Check if type implements encoding.TextUnmarshaler BEFORE checking for slice
+			// This allows slice types like kafka.Brokers to implement TextUnmarshaler on the slice itself
+			ptrType := reflect.PointerTo(ef.Type())
+			if ptrType.Implements(reflect.TypeOf((*encoding.TextUnmarshaler)(nil)).Elem()) {
+				// Handle default value
+				if found && defaultString != "" {
+					unmarshaler := reflect.New(ef.Type()).Interface().(encoding.TextUnmarshaler)
+					if err := unmarshaler.UnmarshalText([]byte(defaultString)); err != nil {
+						return nil, errors.Wrapf(ctx, err, "unmarshal default value %q for field %s failed", defaultString, tf.Name)
+					}
+					values[tf.Name] = reflect.ValueOf(unmarshaler).Elem().Interface()
+				}
+
+				flag.CommandLine.Func(argName, usage, func(value string) error {
+					if value == "" {
+						return nil
+					}
+					unmarshaler := reflect.New(ef.Type()).Interface().(encoding.TextUnmarshaler)
+					if err := unmarshaler.UnmarshalText([]byte(value)); err != nil {
+						return errors.Wrap(ctx, err, "unmarshal text failed")
+					}
+					values[tf.Name] = reflect.ValueOf(unmarshaler).Elem().Interface()
+					return nil
+				})
+				continue
+			}
+
+			// Check if it's a slice type (for slices that don't implement TextUnmarshaler)
 			if ef.Type().Kind() == reflect.Slice {
 				separator := tf.Tag.Get("separator")
 				if separator == "" {
@@ -536,32 +563,6 @@ func argsToValues(
 						return err
 					}
 					values[tf.Name] = parsed
-					return nil
-				})
-				continue
-			}
-
-			// Check if type implements encoding.TextUnmarshaler
-			ptrType := reflect.PointerTo(ef.Type())
-			if ptrType.Implements(reflect.TypeOf((*encoding.TextUnmarshaler)(nil)).Elem()) {
-				// Handle default value
-				if found && defaultString != "" {
-					unmarshaler := reflect.New(ef.Type()).Interface().(encoding.TextUnmarshaler)
-					if err := unmarshaler.UnmarshalText([]byte(defaultString)); err != nil {
-						return nil, errors.Wrapf(ctx, err, "unmarshal default value %q for field %s failed", defaultString, tf.Name)
-					}
-					values[tf.Name] = reflect.ValueOf(unmarshaler).Elem().Interface()
-				}
-
-				flag.CommandLine.Func(argName, usage, func(value string) error {
-					if value == "" {
-						return nil
-					}
-					unmarshaler := reflect.New(ef.Type()).Interface().(encoding.TextUnmarshaler)
-					if err := unmarshaler.UnmarshalText([]byte(value)); err != nil {
-						return errors.Wrap(ctx, err, "unmarshal text failed")
-					}
-					values[tf.Name] = reflect.ValueOf(unmarshaler).Elem().Interface()
 					return nil
 				})
 				continue

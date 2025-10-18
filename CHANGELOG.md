@@ -8,6 +8,15 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.8.0
+
+- Add support for slice types implementing TextUnmarshaler on the slice itself (e.g., kafka.Brokers)
+- Enhanced Fill function to handle encoding.TextMarshaler types for proper JSON round-tripping
+- Reordered type checks to prioritize TextUnmarshaler before generic slice handling
+- Add MarshalText support requirement for slice types using TextUnmarshaler
+- Consolidate test files following one implementation file per test file pattern
+- Add comprehensive Context-based test structure for TextUnmarshaler functionality
+
 ## v2.7.0
 
 - Add support for encoding.TextUnmarshaler interface for custom type parsing

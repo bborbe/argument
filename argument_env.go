@@ -285,7 +285,19 @@ func envToValues(
 			}
 			values[tf.Name] = *unixTime
 		default:
-			// Check if it's a slice type
+			// Check if type implements encoding.TextUnmarshaler BEFORE checking for slice
+			// This allows slice types like kafka.Brokers to implement TextUnmarshaler on the slice itself
+			ptrType := reflect.PointerTo(ef.Type())
+			if ptrType.Implements(reflect.TypeOf((*encoding.TextUnmarshaler)(nil)).Elem()) {
+				unmarshaler := reflect.New(ef.Type()).Interface().(encoding.TextUnmarshaler)
+				if err := unmarshaler.UnmarshalText([]byte(value)); err != nil {
+					return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+				}
+				values[tf.Name] = reflect.ValueOf(unmarshaler).Elem().Interface()
+				continue
+			}
+
+			// Check if it's a slice type (for slices that don't implement TextUnmarshaler)
 			if ef.Type().Kind() == reflect.Slice {
 				separator := tf.Tag.Get("separator")
 				if separator == "" {
@@ -298,17 +310,6 @@ func envToValues(
 					return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
 				}
 				values[tf.Name] = parsed
-				continue
-			}
-
-			// Check if type implements encoding.TextUnmarshaler
-			ptrType := reflect.PointerTo(ef.Type())
-			if ptrType.Implements(reflect.TypeOf((*encoding.TextUnmarshaler)(nil)).Elem()) {
-				unmarshaler := reflect.New(ef.Type()).Interface().(encoding.TextUnmarshaler)
-				if err := unmarshaler.UnmarshalText([]byte(value)); err != nil {
-					return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
-				}
-				values[tf.Name] = reflect.ValueOf(unmarshaler).Elem().Interface()
 				continue
 			}
 

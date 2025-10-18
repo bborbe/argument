@@ -8,6 +8,18 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.5.1
+
+- Fix error wrapping pattern: replace errors.Wrapf with errors.Wrap where no format placeholders are used
+- Add package-level documentation in doc.go
+- Add comprehensive documentation for ParseAndPrint function
+- Improve Fill function documentation with detailed parameter descriptions
+- Upgrade to Go 1.25.3
+- Enhance README with CI and Go Report Card badges
+- Expand Development section in README with all available Makefile commands
+- Update Contributing section with step-by-step instructions
+- Update copyright years from 2019 to 2025
+
 ## v2.5.0
 
 - Add support for time.Time and *time.Time types with RFC3339 format parsing

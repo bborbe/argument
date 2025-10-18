@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Benjamin Borbe All rights reserved.
+// Copyright (c) 2025 Benjamin Borbe All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
@@ -26,10 +26,10 @@ import (
 func ParseEnv(ctx context.Context, data interface{}, environ []string) error {
 	values, err := envToValues(ctx, data, environ)
 	if err != nil {
-		return errors.Wrapf(ctx, err, "env to values failed")
+		return errors.Wrap(ctx, err, "env to values failed")
 	}
 	if err := Fill(ctx, data, values); err != nil {
-		return errors.Wrapf(ctx, err, "fill failed")
+		return errors.Wrap(ctx, err, "fill failed")
 	}
 	return nil
 }

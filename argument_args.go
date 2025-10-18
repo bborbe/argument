@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Benjamin Borbe All rights reserved.
+// Copyright (c) 2025 Benjamin Borbe All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
@@ -27,10 +27,10 @@ import (
 func ParseArgs(ctx context.Context, data interface{}, args []string) error {
 	values, err := argsToValues(ctx, data, args)
 	if err != nil {
-		return errors.Wrapf(ctx, err, "args to values failed")
+		return errors.Wrap(ctx, err, "args to values failed")
 	}
 	if err := Fill(ctx, data, values); err != nil {
-		return errors.Wrapf(ctx, err, "fill failed")
+		return errors.Wrap(ctx, err, "fill failed")
 	}
 	return nil
 }
@@ -141,7 +141,7 @@ func argsToValues(
 				}
 				v, err := strconv.ParseFloat(s, 64)
 				if err != nil {
-					return errors.Wrapf(ctx, err, "parse float failed")
+					return errors.Wrap(ctx, err, "parse float failed")
 				}
 				values[tf.Name] = v
 				return nil
@@ -159,7 +159,7 @@ func argsToValues(
 				}
 				duration, err := libtime.ParseDuration(ctx, value)
 				if err != nil {
-					return errors.Wrapf(ctx, err, "parse duration failed")
+					return errors.Wrap(ctx, err, "parse duration failed")
 				}
 				values[tf.Name] = duration.Duration()
 				return nil
@@ -180,7 +180,7 @@ func argsToValues(
 				}
 				t, err := libtime.ParseTime(ctx, value)
 				if err != nil {
-					return errors.Wrapf(ctx, err, "parse time failed")
+					return errors.Wrap(ctx, err, "parse time failed")
 				}
 				values[tf.Name] = *t
 				return nil
@@ -201,7 +201,7 @@ func argsToValues(
 				}
 				t, err := libtime.ParseTime(ctx, value)
 				if err != nil {
-					return errors.Wrapf(ctx, err, "parse time failed")
+					return errors.Wrap(ctx, err, "parse time failed")
 				}
 				values[tf.Name] = *t
 				return nil
@@ -222,7 +222,7 @@ func argsToValues(
 				}
 				duration, err := libtime.ParseDuration(ctx, value)
 				if err != nil {
-					return errors.Wrapf(ctx, err, "parse duration failed")
+					return errors.Wrap(ctx, err, "parse duration failed")
 				}
 				values[tf.Name] = duration.Duration()
 				return nil
@@ -243,7 +243,7 @@ func argsToValues(
 				}
 				duration, err := libtime.ParseDuration(ctx, value)
 				if err != nil {
-					return errors.Wrapf(ctx, err, "parse duration failed")
+					return errors.Wrap(ctx, err, "parse duration failed")
 				}
 				values[tf.Name] = *duration
 				return nil
@@ -264,7 +264,7 @@ func argsToValues(
 				}
 				duration, err := libtime.ParseDuration(ctx, value)
 				if err != nil {
-					return errors.Wrapf(ctx, err, "parse duration failed")
+					return errors.Wrap(ctx, err, "parse duration failed")
 				}
 				values[tf.Name] = *duration
 				return nil
@@ -285,7 +285,7 @@ func argsToValues(
 				}
 				dateTime, err := libtime.ParseDateTime(ctx, value)
 				if err != nil {
-					return errors.Wrapf(ctx, err, "parse datetime failed")
+					return errors.Wrap(ctx, err, "parse datetime failed")
 				}
 				values[tf.Name] = *dateTime
 				return nil
@@ -306,7 +306,7 @@ func argsToValues(
 				}
 				dateTime, err := libtime.ParseDateTime(ctx, value)
 				if err != nil {
-					return errors.Wrapf(ctx, err, "parse datetime failed")
+					return errors.Wrap(ctx, err, "parse datetime failed")
 				}
 				values[tf.Name] = *dateTime
 				return nil
@@ -327,7 +327,7 @@ func argsToValues(
 				}
 				date, err := libtime.ParseDate(ctx, value)
 				if err != nil {
-					return errors.Wrapf(ctx, err, "parse date failed")
+					return errors.Wrap(ctx, err, "parse date failed")
 				}
 				values[tf.Name] = *date
 				return nil
@@ -348,7 +348,7 @@ func argsToValues(
 				}
 				date, err := libtime.ParseDate(ctx, value)
 				if err != nil {
-					return errors.Wrapf(ctx, err, "parse date failed")
+					return errors.Wrap(ctx, err, "parse date failed")
 				}
 				values[tf.Name] = *date
 				return nil
@@ -369,7 +369,7 @@ func argsToValues(
 				}
 				unixTime, err := libtime.ParseUnixTime(ctx, value)
 				if err != nil {
-					return errors.Wrapf(ctx, err, "parse unixtime failed")
+					return errors.Wrap(ctx, err, "parse unixtime failed")
 				}
 				values[tf.Name] = *unixTime
 				return nil
@@ -390,7 +390,7 @@ func argsToValues(
 				}
 				unixTime, err := libtime.ParseUnixTime(ctx, value)
 				if err != nil {
-					return errors.Wrapf(ctx, err, "parse unixtime failed")
+					return errors.Wrap(ctx, err, "parse unixtime failed")
 				}
 				values[tf.Name] = *unixTime
 				return nil
@@ -407,7 +407,7 @@ func argsToValues(
 		}
 	}
 	if err := flag.CommandLine.Parse(args); err != nil {
-		return nil, errors.Wrapf(ctx, err, "parse commandline failed")
+		return nil, errors.Wrap(ctx, err, "parse commandline failed")
 	}
 	return values, nil
 }

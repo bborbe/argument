@@ -1,7 +1,8 @@
 # Argument
 
-[![Go Version](https://img.shields.io/github/go-mod/go-version/bborbe/argument)](https://github.com/bborbe/argument)
 [![Go Reference](https://pkg.go.dev/badge/github.com/bborbe/argument/v2.svg)](https://pkg.go.dev/github.com/bborbe/argument/v2)
+[![CI](https://github.com/bborbe/argument/actions/workflows/ci.yml/badge.svg)](https://github.com/bborbe/argument/actions/workflows/ci.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/bborbe/argument/v2)](https://goreportcard.com/report/github.com/bborbe/argument/v2)
 [![License](https://img.shields.io/github/license/bborbe/argument)](https://github.com/bborbe/argument/blob/master/LICENSE)
 
 A declarative Go library for parsing command-line arguments and environment variables into structs using struct tags. Perfect for building CLI applications with clean configuration management.
@@ -157,24 +158,15 @@ Values are applied in the following priority order (higher priority overwrites l
 2. **Environment variables** (from `env:` tag)  
 3. **Command-line arguments** (from `arg:` tag)
 
-## API Reference
+## API Documentation
 
-### Parse Functions
+For complete API documentation, visit [pkg.go.dev](https://pkg.go.dev/github.com/bborbe/argument/v2).
 
-```go
-// Parse parses arguments and environment variables (quiet mode)
-func Parse(ctx context.Context, data interface{}) error
+### Main Functions
 
-// ParseAndPrint parses and prints the final configuration values
-func ParseAndPrint(ctx context.Context, data interface{}) error
-```
-
-### Validation
-
-```go
-// ValidateRequired checks that all required fields (no default value) are set
-func ValidateRequired(ctx context.Context, data interface{}) error
-```
+- `Parse(ctx context.Context, data interface{}) error` - Parse arguments and environment variables (quiet mode)
+- `ParseAndPrint(ctx context.Context, data interface{}) error` - Parse and print the final configuration values
+- `ValidateRequired(ctx context.Context, data interface{}) error` - Check that all required fields are set
 
 ## Command-Line Usage
 
@@ -218,13 +210,31 @@ if err != nil {
 }
 ```
 
-## Testing
+## Development
 
-The library is thoroughly tested with BDD-style tests using Ginkgo and Gomega:
-
+### Running Tests
 ```bash
-make test        # Run all tests
-make precommit   # Run full development workflow
+make test
+```
+
+### Code Generation (Mocks)
+```bash
+make generate
+```
+
+### Format Code
+```bash
+make format
+```
+
+### Full Development Workflow
+```bash
+make precommit  # Format, generate, test, and check
+```
+
+### Linting
+```bash
+make check  # Run vet, errcheck, vulncheck, and security scanners
 ```
 
 ## Version 2 Changes
@@ -237,12 +247,18 @@ Version 2.3.0 introduced breaking changes for better library behavior:
 
 ## Contributing
 
-Contributions are welcome! This project follows standard Go conventions and includes:
+Contributions are welcome! Please follow these steps:
 
-- Comprehensive tests with Ginkgo/Gomega
-- Code generation with `make generate`
-- Linting with `make check`
-- Formatting with `make format`
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes following the existing code style
+4. Run `make precommit` to ensure all checks pass
+5. Submit a pull request
+
+This project uses:
+- Ginkgo/Gomega for BDD-style testing
+- Counterfeiter for mock generation
+- Standard Go formatting and linting tools
 
 ## License
 

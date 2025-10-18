@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Benjamin Borbe All rights reserved.
+// Copyright (c) 2025 Benjamin Borbe All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
@@ -50,23 +50,29 @@ import (
 // Precedence: Command-line arguments override environment variables, which override defaults.
 func Parse(ctx context.Context, data interface{}) error {
 	if err := parse(ctx, data); err != nil {
-		return errors.Wrapf(ctx, err, "parse failed")
+		return errors.Wrap(ctx, err, "parse failed")
 	}
 	if err := ValidateRequired(ctx, data); err != nil {
-		return errors.Wrapf(ctx, err, "validate required failed")
+		return errors.Wrap(ctx, err, "validate required failed")
 	}
 	return nil
 }
 
+// ParseAndPrint parses command-line arguments and environment variables into a struct,
+// prints the parsed configuration to stdout, then validates required fields.
+// It combines Parse() functionality with Print() output, useful for debugging and
+// confirming configuration during application startup.
+//
+// See Parse() documentation for supported types and struct tag options.
 func ParseAndPrint(ctx context.Context, data interface{}) error {
 	if err := parse(ctx, data); err != nil {
-		return errors.Wrapf(ctx, err, "parse failed")
+		return errors.Wrap(ctx, err, "parse failed")
 	}
 	if err := Print(ctx, data); err != nil {
-		return errors.Wrapf(ctx, err, "print failed")
+		return errors.Wrap(ctx, err, "print failed")
 	}
 	if err := ValidateRequired(ctx, data); err != nil {
-		return errors.Wrapf(ctx, err, "validate required failed")
+		return errors.Wrap(ctx, err, "validate required failed")
 	}
 	return nil
 }
@@ -74,18 +80,18 @@ func ParseAndPrint(ctx context.Context, data interface{}) error {
 func parse(ctx context.Context, data interface{}) error {
 	argsValues, err := argsToValues(ctx, data, os.Args[1:])
 	if err != nil {
-		return errors.Wrapf(ctx, err, "arg to values failed")
+		return errors.Wrap(ctx, err, "arg to values failed")
 	}
 	envValues, err := envToValues(ctx, data, os.Environ())
 	if err != nil {
-		return errors.Wrapf(ctx, err, "env to values failed")
+		return errors.Wrap(ctx, err, "env to values failed")
 	}
 	defaultValues, err := DefaultValues(ctx, data)
 	if err != nil {
-		return errors.Wrapf(ctx, err, "default values failed")
+		return errors.Wrap(ctx, err, "default values failed")
 	}
 	if err := Fill(ctx, data, mergeValues(defaultValues, argsValues, envValues)); err != nil {
-		return errors.Wrapf(ctx, err, "fill failed")
+		return errors.Wrap(ctx, err, "fill failed")
 	}
 	return nil
 }

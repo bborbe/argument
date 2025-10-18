@@ -6,6 +6,7 @@ package argument
 
 import (
 	"context"
+	"encoding"
 	"reflect"
 	"strconv"
 	"time"
@@ -297,6 +298,17 @@ func envToValues(
 					return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
 				}
 				values[tf.Name] = parsed
+				continue
+			}
+
+			// Check if type implements encoding.TextUnmarshaler
+			ptrType := reflect.PointerTo(ef.Type())
+			if ptrType.Implements(reflect.TypeOf((*encoding.TextUnmarshaler)(nil)).Elem()) {
+				unmarshaler := reflect.New(ef.Type()).Interface().(encoding.TextUnmarshaler)
+				if err := unmarshaler.UnmarshalText([]byte(value)); err != nil {
+					return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+				}
+				values[tf.Name] = reflect.ValueOf(unmarshaler).Elem().Interface()
 				continue
 			}
 

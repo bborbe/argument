@@ -11,6 +11,8 @@ A declarative Go library for parsing command-line arguments and environment vari
 
 - 🏷️ **Declarative**: Use struct tags to define argument names, environment variables, and defaults
 - 🔄 **Multiple Sources**: Supports command-line arguments, environment variables, and default values
+- 📋 **Slice Support**: Parse comma-separated values into slices with configurable separators
+- 🔧 **Custom Parsing**: Implement `encoding.TextUnmarshaler` for complex parsing logic
 - ⚡ **Zero Dependencies**: Minimal external dependencies for core functionality
 - ✅ **Type Safe**: Supports all common Go types including pointers for optional values
 - 🕐 **Extended Duration**: Enhanced `time.Duration` parsing with support for days and weeks
@@ -140,6 +142,68 @@ Custom types work with all supported underlying types:
 - `bool` → `type IsEnabled bool` 
 - `float64` → `type Rate float64`
 
+### Slice Types
+
+Parse comma-separated values into slices automatically:
+
+```go
+type Config struct {
+    Hosts    []string  `arg:"hosts" env:"HOSTS" default:"localhost,127.0.0.1"`
+    Ports    []int     `arg:"ports" env:"PORTS" separator:":" default:"8080:8081:8082"`
+    Prices   []float64 `arg:"prices" default:"9.99,19.99,29.99"`
+    Flags    []bool    `arg:"flags" default:"true,false,true"`
+
+    // Custom separator for specific use cases
+    Tags     []string  `arg:"tags" separator:"|" default:"prod|api|web"`
+}
+
+var config Config
+err := argument.Parse(context.Background(), &config)
+```
+
+Run with: `./app -hosts=server1,server2,server3 -ports=8080:9000:9001`
+
+Features:
+- Default comma separator (`,`) can be customized with `separator:` tag
+- Automatic whitespace trimming around elements
+- Empty string creates empty slice
+- Works with custom types: `[]Username`, `[]Environment`, etc.
+
+### Custom Parsing with TextUnmarshaler
+
+Implement `encoding.TextUnmarshaler` for complex parsing logic:
+
+```go
+import "encoding"
+
+type Broker string
+
+func (b *Broker) UnmarshalText(text []byte) error {
+    value := string(text)
+    if !strings.Contains(value, "://") {
+        value = "plain://" + value  // Add default schema
+    }
+    *b = Broker(value)
+    return nil
+}
+
+type KafkaConfig struct {
+    Broker  Broker   `arg:"broker" default:"localhost:9092"`
+    Brokers []Broker `arg:"brokers" env:"KAFKA_BROKERS"`  // Works in slices too!
+}
+
+var config KafkaConfig
+err := argument.Parse(context.Background(), &config)
+// broker "localhost:9092" becomes "plain://localhost:9092"
+// brokers "kafka1:9092,ssl://kafka2:9093" becomes ["plain://kafka1:9092", "ssl://kafka2:9093"]
+```
+
+Use cases:
+- URL validation and normalization
+- Default schema/prefix handling
+- Complex validation logic
+- Format conversion
+
 ## Supported Types
 
 - **Strings**: `string`
@@ -148,7 +212,9 @@ Custom types work with all supported underlying types:
 - **Booleans**: `bool`
 - **Durations**: `time.Duration` (with extended parsing)
 - **Pointers**: `*string`, `*int`, `*float64`, etc. (for optional values)
+- **Slices**: `[]string`, `[]int`, `[]int64`, `[]uint`, `[]uint64`, `[]float64`, `[]bool`
 - **Custom Types**: Named types with underlying primitive types
+- **Custom Parsing**: Any type implementing `encoding.TextUnmarshaler`
 
 ## Priority Order
 

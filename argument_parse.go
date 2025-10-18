@@ -19,6 +19,7 @@ import (
 //   - Pointer types: *float64 (optional values, nil if not provided)
 //   - Slice types: []string, []int, []int64, []uint, []uint64, []float64, []bool
 //   - Custom type slices: []Username where type Username string
+//   - Custom types implementing encoding.TextUnmarshaler: For complex parsing logic
 //   - Standard library time types:
 //   - time.Time and *time.Time: RFC3339 format (e.g., "2006-01-02T15:04:05Z")
 //   - time.Duration and *time.Duration: Extended format supporting days (e.g., "1d2h30m", "7d")
@@ -54,6 +55,24 @@ import (
 //	    Password string        `arg:"password" env:"PASSWORD" display:"length" usage:"API password"`
 //	    Names    []string      `arg:"names" env:"NAMES" default:"alice,bob" usage:"User names"`
 //	    Ports    []int         `arg:"ports" env:"PORTS" separator:":" usage:"Port numbers"`
+//	}
+//
+// Custom types can implement encoding.TextUnmarshaler for specialized parsing:
+//
+//	type Broker string
+//
+//	func (b *Broker) UnmarshalText(text []byte) error {
+//	    value := string(text)
+//	    if !strings.Contains(value, "://") {
+//	        value = "plain://" + value  // Add default schema
+//	    }
+//	    *b = Broker(value)
+//	    return nil
+//	}
+//
+//	type Config struct {
+//	    Broker  Broker   `arg:"broker" default:"localhost:9092"`
+//	    Brokers []Broker `arg:"brokers" env:"BROKERS" usage:"Kafka brokers"`
 //	}
 //
 // Precedence: Command-line arguments override environment variables, which override defaults.

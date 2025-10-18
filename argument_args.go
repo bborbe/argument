@@ -6,6 +6,7 @@ package argument
 
 import (
 	"context"
+	"encoding"
 	"flag"
 	"reflect"
 	"strconv"
@@ -116,6 +117,19 @@ func parseSliceFromString(
 	// If all parts were empty after trimming, return empty slice
 	if len(trimmed) == 0 {
 		return reflect.MakeSlice(reflect.SliceOf(elemType), 0, 0).Interface(), nil
+	}
+
+	// Check if element type implements encoding.TextUnmarshaler
+	ptrType := reflect.PointerTo(elemType)
+	if ptrType.Implements(reflect.TypeOf((*encoding.TextUnmarshaler)(nil)).Elem()) {
+		result := reflect.MakeSlice(reflect.SliceOf(elemType), len(trimmed), len(trimmed))
+		for i, p := range trimmed {
+			elem := result.Index(i).Addr().Interface().(encoding.TextUnmarshaler)
+			if err := elem.UnmarshalText([]byte(p)); err != nil {
+				return nil, errors.Wrapf(ctx, err, "unmarshal text %q failed", p)
+			}
+		}
+		return result.Interface(), nil
 	}
 
 	// Convert based on element type
@@ -522,6 +536,32 @@ func argsToValues(
 						return err
 					}
 					values[tf.Name] = parsed
+					return nil
+				})
+				continue
+			}
+
+			// Check if type implements encoding.TextUnmarshaler
+			ptrType := reflect.PointerTo(ef.Type())
+			if ptrType.Implements(reflect.TypeOf((*encoding.TextUnmarshaler)(nil)).Elem()) {
+				// Handle default value
+				if found && defaultString != "" {
+					unmarshaler := reflect.New(ef.Type()).Interface().(encoding.TextUnmarshaler)
+					if err := unmarshaler.UnmarshalText([]byte(defaultString)); err != nil {
+						return nil, errors.Wrapf(ctx, err, "unmarshal default value %q for field %s failed", defaultString, tf.Name)
+					}
+					values[tf.Name] = reflect.ValueOf(unmarshaler).Elem().Interface()
+				}
+
+				flag.CommandLine.Func(argName, usage, func(value string) error {
+					if value == "" {
+						return nil
+					}
+					unmarshaler := reflect.New(ef.Type()).Interface().(encoding.TextUnmarshaler)
+					if err := unmarshaler.UnmarshalText([]byte(value)); err != nil {
+						return errors.Wrap(ctx, err, "unmarshal text failed")
+					}
+					values[tf.Name] = reflect.ValueOf(unmarshaler).Elem().Interface()
 					return nil
 				})
 				continue

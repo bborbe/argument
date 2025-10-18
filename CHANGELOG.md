@@ -8,6 +8,15 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.7.0
+
+- Add support for encoding.TextUnmarshaler interface for custom type parsing
+- Allow types to define custom unmarshaling logic via UnmarshalText method
+- Support TextUnmarshaler for both single values and slice elements
+- Works with command-line arguments, environment variables, and default values
+- Add comprehensive test suite with TestBroker and TestURL examples
+- Update documentation with TextUnmarshaler examples
+
 ## v2.6.0
 
 - Add support for slice types with comma-separated values

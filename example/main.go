@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	libtime "github.com/bborbe/time"
@@ -23,6 +24,25 @@ type Password string
 type Active bool
 
 type Environment string
+
+// Broker demonstrates encoding.TextUnmarshaler for custom parsing logic.
+// It adds a default "plain://" schema if none is provided.
+type Broker string
+
+func (b *Broker) UnmarshalText(text []byte) error {
+	value := string(text)
+	if strings.Contains(value, "://") {
+		*b = Broker(value)
+		return nil
+	}
+	// Add default plain:// schema if missing
+	*b = Broker("plain://" + value)
+	return nil
+}
+
+func (b Broker) String() string {
+	return string(b)
+}
 
 func main() {
 	ctx := context.Background()
@@ -55,6 +75,10 @@ func main() {
 
 		// Slice types - custom type slices
 		AllowedUsers []Username `arg:"allowed_users" env:"ALLOWED_USERS"`
+
+		// TextUnmarshaler types - custom parsing logic
+		Broker  Broker   `arg:"broker" env:"BROKER" default:"localhost:9092"`
+		Brokers []Broker `arg:"brokers" env:"BROKERS"`
 
 		// Time types
 		StdDuration time.Duration    `arg:"std-duration"`

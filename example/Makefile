@@ -4,6 +4,16 @@ run:
 	-url="http://example.com" \
 	-defaultWithArg="banana" \
 	-active=true \
+	-names="charlie,dave,eve" \
+	-tags="production,api,monitoring" \
+	-environments="dev|staging|prod" \
+	-ports="8080:8081:9000" \
+	-ids="2001,2002,2003" \
+	-counters="10;20;30;40" \
+	-big-numbers="9999999999,8888888888" \
+	-prices="12.50,25.00,37.50" \
+	-flags="true,false,true,false" \
+	-allowed_users="admin,superuser,guest" \
 	-std-duration=1h30m \
 	-std-time=2023-12-25T10:30:00Z \
 	-duration=1d2h30m \

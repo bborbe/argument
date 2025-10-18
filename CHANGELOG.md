@@ -8,6 +8,18 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.6.0
+
+- Add support for slice types with comma-separated values
+- Support []string, []int, []int64, []uint, []uint64, []float64, []bool
+- Support custom type slices (e.g., []Username where type Username string)
+- Add configurable separator via `separator:` struct tag (default: ",")
+- Automatically trim whitespace from slice elements
+- Support slice parsing from both command-line arguments and environment variables
+- Add slice support to DefaultValues function for default tag handling
+- Add comprehensive test suite for slice functionality
+- Enhance example with demonstrations of all slice types and separators
+
 ## v2.5.1
 
 - Fix error wrapping pattern: replace errors.Wrapf with errors.Wrap where no format placeholders are used

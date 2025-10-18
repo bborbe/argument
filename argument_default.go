@@ -188,6 +188,22 @@ func DefaultValues(ctx context.Context, data interface{}) (map[string]interface{
 			}
 			values[tf.Name] = duration.Duration()
 		default:
+			// Check if it's a slice type
+			if ef.Type().Kind() == reflect.Slice {
+				separator := tf.Tag.Get("separator")
+				if separator == "" {
+					separator = ","
+				}
+				elemType := ef.Type().Elem()
+
+				parsed, err := parseSliceFromString(ctx, value, separator, elemType)
+				if err != nil {
+					return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
+				}
+				values[tf.Name] = parsed
+				continue
+			}
+
 			// Check if it's a custom type with underlying primitive type
 			if handled, err := handleCustomTypeDefault(ctx, values, tf, ef, value); handled {
 				if err != nil {

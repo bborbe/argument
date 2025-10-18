@@ -9,6 +9,7 @@ import (
 	"flag"
 	"reflect"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/bborbe/errors"
@@ -87,6 +88,108 @@ func handleCustomType(
 		}
 	}
 	return false, nil
+}
+
+// parseSliceFromString splits a string by separator, trims whitespace from each element,
+// and converts to the appropriate slice type based on the element type.
+func parseSliceFromString(
+	ctx context.Context,
+	value string,
+	separator string,
+	elemType reflect.Type,
+) (interface{}, error) {
+	if value == "" {
+		// Return empty slice of the appropriate type
+		return reflect.MakeSlice(reflect.SliceOf(elemType), 0, 0).Interface(), nil
+	}
+
+	parts := strings.Split(value, separator)
+	// Trim whitespace from each part
+	trimmed := make([]string, 0, len(parts))
+	for _, p := range parts {
+		t := strings.TrimSpace(p)
+		if t != "" { // Skip empty parts after trimming
+			trimmed = append(trimmed, t)
+		}
+	}
+
+	// If all parts were empty after trimming, return empty slice
+	if len(trimmed) == 0 {
+		return reflect.MakeSlice(reflect.SliceOf(elemType), 0, 0).Interface(), nil
+	}
+
+	// Convert based on element type
+	switch elemType.Kind() {
+	case reflect.String:
+		return trimmed, nil
+	case reflect.Int:
+		result := make([]int, len(trimmed))
+		for i, p := range trimmed {
+			v, err := strconv.Atoi(p)
+			if err != nil {
+				return nil, errors.Wrapf(ctx, err, "parse int %q failed", p)
+			}
+			result[i] = v
+		}
+		return result, nil
+	case reflect.Int64:
+		result := make([]int64, len(trimmed))
+		for i, p := range trimmed {
+			v, err := strconv.ParseInt(p, 10, 64)
+			if err != nil {
+				return nil, errors.Wrapf(ctx, err, "parse int64 %q failed", p)
+			}
+			result[i] = v
+		}
+		return result, nil
+	case reflect.Uint:
+		result := make([]uint, len(trimmed))
+		for i, p := range trimmed {
+			v, err := strconv.ParseUint(p, 10, 0)
+			if err != nil {
+				return nil, errors.Wrapf(ctx, err, "parse uint %q failed", p)
+			}
+			result[i] = uint(v)
+		}
+		return result, nil
+	case reflect.Uint64:
+		result := make([]uint64, len(trimmed))
+		for i, p := range trimmed {
+			v, err := strconv.ParseUint(p, 10, 64)
+			if err != nil {
+				return nil, errors.Wrapf(ctx, err, "parse uint64 %q failed", p)
+			}
+			result[i] = v
+		}
+		return result, nil
+	case reflect.Float64:
+		result := make([]float64, len(trimmed))
+		for i, p := range trimmed {
+			v, err := strconv.ParseFloat(p, 64)
+			if err != nil {
+				return nil, errors.Wrapf(ctx, err, "parse float64 %q failed", p)
+			}
+			result[i] = v
+		}
+		return result, nil
+	case reflect.Bool:
+		result := make([]bool, len(trimmed))
+		for i, p := range trimmed {
+			v, err := strconv.ParseBool(p)
+			if err != nil {
+				return nil, errors.Wrapf(ctx, err, "parse bool %q failed", p)
+			}
+			result[i] = v
+		}
+		return result, nil
+	default:
+		// Check for custom string types like Username
+		if elemType.PkgPath() != "" && elemType.Kind() == reflect.String {
+			// Return as []string, Fill() will convert via JSON to custom type
+			return trimmed, nil
+		}
+		return nil, errors.Errorf(ctx, "unsupported slice element type: %v", elemType)
+	}
 }
 
 func argsToValues(
@@ -396,6 +499,34 @@ func argsToValues(
 				return nil
 			})
 		default:
+			// Check if it's a slice type
+			if ef.Type().Kind() == reflect.Slice {
+				separator := tf.Tag.Get("separator")
+				if separator == "" {
+					separator = ","
+				}
+				elemType := ef.Type().Elem()
+
+				// Handle default value for slices
+				if found && defaultString != "" {
+					parsed, err := parseSliceFromString(ctx, defaultString, separator, elemType)
+					if err != nil {
+						return nil, errors.Wrapf(ctx, err, "invalid default value %q for field %s", defaultString, tf.Name)
+					}
+					values[tf.Name] = parsed
+				}
+
+				flag.CommandLine.Func(argName, usage, func(value string) error {
+					parsed, err := parseSliceFromString(ctx, value, separator, elemType)
+					if err != nil {
+						return err
+					}
+					values[tf.Name] = parsed
+					return nil
+				})
+				continue
+			}
+
 			// Check if it's a custom type with underlying primitive type
 			if handled, err := handleCustomType(ctx, values, tf, ef, argName, defaultString, found, usage); handled {
 				if err != nil {

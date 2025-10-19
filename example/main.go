@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/bborbe/errors"
 	libtime "github.com/bborbe/time"
 
 	"github.com/bborbe/argument/v2"
@@ -27,9 +28,36 @@ type Environment string
 
 type Brokers []Broker
 
+func (b Brokers) Validate(ctx context.Context) error {
+	if len(b) == 0 {
+		return errors.New(ctx, "list of brokers should not be empty")
+	}
+	for _, broker := range b {
+		if err := broker.Validate(ctx); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // Broker demonstrates encoding.TextUnmarshaler for custom parsing logic.
 // It adds a default "plain://" schema if none is provided.
 type Broker string
+
+func (b Broker) Validate(ctx context.Context) error {
+	if len(b) == 0 {
+		return errors.New(ctx, "empty Broker")
+	}
+	// Basic format check - broker should be in host:port format
+	s := string(b)
+	if idx := strings.Index(s, "://"); idx != -1 {
+		s = s[idx+3:]
+	}
+	if !strings.Contains(s, ":") {
+		return errors.New(ctx, "broker must contain host:port")
+	}
+	return nil
+}
 
 func (b *Broker) UnmarshalText(text []byte) error {
 	value := string(text)
@@ -99,4 +127,26 @@ func main() {
 	if err := encoder.Encode(data); err != nil {
 		log.Fatalf("encode data failed: %v", err)
 	}
+
+	// Example validation failures (commented out):
+	//
+	// 1. Broker validation - empty broker:
+	//    emptyBroker := Broker("")
+	//    err := emptyBroker.Validate(ctx)
+	//    // Error: "empty Broker"
+	//
+	// 2. Broker validation - missing port:
+	//    invalidBroker := Broker("localhost")
+	//    err := invalidBroker.Validate(ctx)
+	//    // Error: "broker must contain host:port"
+	//
+	// 3. Brokers validation - empty list:
+	//    emptyBrokers := Brokers{}
+	//    err := emptyBrokers.Validate(ctx)
+	//    // Error: "list of brokers should not be empty"
+	//
+	// 4. Brokers validation - invalid broker in list:
+	//    invalidBrokers := Brokers{Broker("localhost:9092"), Broker("")}
+	//    err := invalidBrokers.Validate(ctx)
+	//    // Error: "empty Broker"
 }

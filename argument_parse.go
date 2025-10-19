@@ -77,11 +77,14 @@ import (
 //
 // Precedence: Command-line arguments override environment variables, which override defaults.
 func Parse(ctx context.Context, data interface{}) error {
-	if err := parse(ctx, data); err != nil {
+	if err := ParseOnly(ctx, data); err != nil {
 		return errors.Wrap(ctx, err, "parse failed")
 	}
 	if err := ValidateRequired(ctx, data); err != nil {
 		return errors.Wrap(ctx, err, "validate required failed")
+	}
+	if err := ValidateHasValidation(ctx, data); err != nil {
+		return errors.Wrap(ctx, err, "validate failed")
 	}
 	return nil
 }
@@ -93,7 +96,7 @@ func Parse(ctx context.Context, data interface{}) error {
 //
 // See Parse() documentation for supported types and struct tag options.
 func ParseAndPrint(ctx context.Context, data interface{}) error {
-	if err := parse(ctx, data); err != nil {
+	if err := ParseOnly(ctx, data); err != nil {
 		return errors.Wrap(ctx, err, "parse failed")
 	}
 	if err := Print(ctx, data); err != nil {
@@ -102,10 +105,38 @@ func ParseAndPrint(ctx context.Context, data interface{}) error {
 	if err := ValidateRequired(ctx, data); err != nil {
 		return errors.Wrap(ctx, err, "validate required failed")
 	}
+	if err := ValidateHasValidation(ctx, data); err != nil {
+		return errors.Wrap(ctx, err, "validate failed")
+	}
 	return nil
 }
 
-func parse(ctx context.Context, data interface{}) error {
+// ParseOnly parses command-line arguments and environment variables into a struct
+// WITHOUT any validation. This is useful when you want to handle validation separately
+// or implement custom validation logic.
+//
+// ParseOnly combines arguments, environment variables, and defaults into the struct
+// but skips both ValidateRequired and ValidateHasValidation checks.
+//
+// Example custom validation workflow:
+//
+//	if err := argument.ParseOnly(ctx, &config); err != nil {
+//	    return err
+//	}
+//	// Custom validation
+//	if config.Port < 1024 {
+//	    return errors.New(ctx, "port must be >= 1024")
+//	}
+//	// Then run standard validation if needed
+//	if err := argument.ValidateRequired(ctx, &config); err != nil {
+//	    return err
+//	}
+//	if err := argument.ValidateHasValidation(ctx, &config); err != nil {
+//	    return err
+//	}
+//
+// See Parse() documentation for supported types and struct tag options.
+func ParseOnly(ctx context.Context, data interface{}) error {
 	argsValues, err := argsToValues(ctx, data, os.Args[1:])
 	if err != nil {
 		return errors.Wrap(ctx, err, "arg to values failed")

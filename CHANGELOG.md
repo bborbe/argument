@@ -8,6 +8,15 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.10.0
+
+- Add `HasValidation` interface for custom field validation with `Validate(context.Context) error` method
+- Add `ParseOnly()` function for validation-free parsing (enables custom validation workflows)
+- Add `ValidateHasValidation()` for manual validation of types implementing `HasValidation`
+- Update validation chain: `Parse()` now calls `ParseOnly()` → `ValidateRequired()` → `ValidateHasValidation()`
+- Add comprehensive test coverage for `HasValidation` interface across struct, field, and slice validation
+- Add example package documentation demonstrating all library features
+
 ## v2.9.0
 
 - Add slice support for required field validation

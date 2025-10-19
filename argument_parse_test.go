@@ -10,6 +10,7 @@ import (
 	"flag"
 	"os"
 
+	"github.com/bborbe/errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -452,6 +453,159 @@ var _ = Describe("Parse", func() {
 			Expect(int(args.Port)).To(Equal(9000))
 			Expect(bool(args.IsActive)).To(BeTrue())
 			Expect(float64(args.Rate)).To(Equal(2.5))
+		})
+	})
+
+	Context("ParseOnly", func() {
+		It("parses arguments without validation", func() {
+			var args struct {
+				Username string `arg:"username" required:"true"`
+			}
+			os.Args = []string{"go", "-username=test"}
+
+			// ParseOnly should succeed even though required field is set
+			err := argument.ParseOnly(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Username).To(Equal("test"))
+		})
+
+		It("skips required validation", func() {
+			var args struct {
+				Username string `arg:"username" required:"true"`
+			}
+			os.Args = []string{"go"}
+
+			// ParseOnly should succeed even though required field is empty
+			err := argument.ParseOnly(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Username).To(Equal(""))
+
+			// But ValidateRequired should fail
+			err = argument.ValidateRequired(ctx, &args)
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("allows custom validation workflow", func() {
+			var args struct {
+				Port int `arg:"port" default:"80"`
+			}
+			os.Args = []string{"go"}
+
+			// Parse without validation
+			err := argument.ParseOnly(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Port).To(Equal(80))
+
+			// Custom validation
+			if args.Port < 1024 {
+				err = errors.New(ctx, "port must be >= 1024")
+			}
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("port must be >= 1024"))
+		})
+
+		It("parses all argument types correctly", func() {
+			var args struct {
+				String  string   `arg:"string" default:"test"`
+				Int     int      `arg:"int" default:"42"`
+				Float   float64  `arg:"float" default:"3.14"`
+				Bool    bool     `arg:"bool" default:"true"`
+				Strings []string `arg:"strings" default:"a,b,c"`
+			}
+			os.Args = []string{"go"}
+
+			err := argument.ParseOnly(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.String).To(Equal("test"))
+			Expect(args.Int).To(Equal(42))
+			Expect(args.Float).To(Equal(3.14))
+			Expect(args.Bool).To(BeTrue())
+			Expect(args.Strings).To(Equal([]string{"a", "b", "c"}))
+		})
+
+		It("works with environment variables", func() {
+			var args struct {
+				Username string `env:"TEST_USERNAME"`
+			}
+			err := os.Setenv("TEST_USERNAME", "envuser")
+			Expect(err).NotTo(HaveOccurred())
+			os.Args = []string{"go"}
+
+			err = argument.ParseOnly(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args.Username).To(Equal("envuser"))
+		})
+
+		It("combines with manual validation calls", func() {
+			var args struct {
+				Required string   `arg:"required" required:"true"`
+				Port     testPort `arg:"port" default:"80"`
+			}
+			os.Args = []string{"go", "-required=test"}
+
+			// Parse only
+			err := argument.ParseOnly(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Manually validate required
+			err = argument.ValidateRequired(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Manually validate HasValidation
+			err = argument.ValidateHasValidation(ctx, &args)
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("port must be >= 1024"))
+		})
+
+		It("ParseOnly + manual validation equals Parse (success case)", func() {
+			type Config struct {
+				Username string   `arg:"user" required:"true"`
+				Port     testPort `arg:"port"                 default:"8080"`
+			}
+
+			var args1 Config
+			os.Args = []string{"go", "-user=test", "-port=9090"}
+
+			err := argument.Parse(ctx, &args1)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(args1.Username).To(Equal("test"))
+			Expect(args1.Port).To(Equal(testPort(9090)))
+		})
+
+		It("ParseOnly + manual validation equals Parse (required field missing)", func() {
+			type Config struct {
+				Username string `arg:"user" required:"true"`
+			}
+
+			var args Config
+			os.Args = []string{"go"}
+
+			err := argument.ParseOnly(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+
+			err = argument.ValidateRequired(ctx, &args)
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("Required field empty"))
+		})
+
+		It("ParseOnly + manual validation equals Parse (validation failure)", func() {
+			type Config struct {
+				Username string   `arg:"user" required:"true"`
+				Port     testPort `arg:"port"                 default:"80"`
+			}
+
+			var args Config
+			os.Args = []string{"go", "-user=test"}
+
+			err := argument.ParseOnly(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+
+			err = argument.ValidateRequired(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+
+			err = argument.ValidateHasValidation(ctx, &args)
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("port must be >= 1024"))
 		})
 	})
 })

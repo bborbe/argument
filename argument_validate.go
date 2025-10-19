@@ -158,3 +158,173 @@ func ValidateRequired(ctx context.Context, data interface{}) error {
 	}
 	return nil
 }
+
+// ValidateHasValidation validates data using the HasValidation interface.
+// It first checks if the top-level struct implements HasValidation.
+// Then it iterates through struct fields:
+//   - For slices: validates the slice type first, then falls back to validating each element
+//   - For other types: validates if they implement HasValidation
+//
+// Important: ValidateHasValidation runs on ALL fields that implement HasValidation,
+// regardless of whether they have the `required:"true"` tag. This is by design:
+//   - The `required` tag checks if a field is present (non-zero)
+//   - The Validate() method checks if a field's value is valid
+//
+// These are separate concerns. If you have an optional field with a default value,
+// that default value should still be validated. If you want zero values to be valid
+// for optional fields, your Validate() implementation should explicitly handle that:
+//
+//	func (p Port) Validate(ctx context.Context) error {
+//	    if p == 0 {
+//	        return nil // zero value is valid for optional ports
+//	    }
+//	    if p < 1024 {
+//	        return fmt.Errorf("port must be >= 1024")
+//	    }
+//	    return nil
+//	}
+//
+// Returns the first validation error encountered.
+//
+// Example usage (automatic validation via Parse):
+//
+//	type Port int
+//	func (p Port) Validate(ctx context.Context) error {
+//	    if p < 1 || p > 65535 {
+//	        return fmt.Errorf("port must be between 1 and 65535, got %d", p)
+//	    }
+//	    return nil
+//	}
+//
+//	type Config struct {
+//	    Port Port `arg:"port" default:"8080"`
+//	}
+//
+//	var config Config
+//	if err := argument.Parse(ctx, &config); err != nil {
+//	    // Parse automatically calls ValidateHasValidation
+//	    // Validation error will be returned if port is out of range
+//	}
+//
+// Example usage (manual validation workflow):
+//
+//	var config Config
+//	if err := argument.ParseOnly(ctx, &config); err != nil {
+//	    return err
+//	}
+//	// Custom logic here (e.g., override certain fields, apply business rules)
+//	if config.Port == 0 {
+//	    config.Port = 8080
+//	}
+//	// Then run standard validation
+//	if err := argument.ValidateRequired(ctx, &config); err != nil {
+//	    return err
+//	}
+//	if err := argument.ValidateHasValidation(ctx, &config); err != nil {
+//	    return err
+//	}
+//
+// For slice validation, the slice type is checked first:
+//
+//	type Brokers []Broker
+//	func (b Brokers) Validate(ctx context.Context) error {
+//	    if len(b) == 0 {
+//	        return fmt.Errorf("at least one broker required")
+//	    }
+//	    // Will automatically validate each Broker if it implements HasValidation
+//	    return nil
+//	}
+func ValidateHasValidation(ctx context.Context, data interface{}) error {
+	// First, check if the top-level struct implements HasValidation
+	if validator, ok := data.(HasValidation); ok {
+		if err := validator.Validate(ctx); err != nil {
+			return errors.Wrap(ctx, err, "validation failed")
+		}
+	}
+
+	// Now validate fields
+	e := reflect.ValueOf(data).Elem()
+	t := e.Type()
+	for i := 0; i < e.NumField(); i++ {
+		ef := e.Field(i)
+		tf := t.Field(i)
+
+		// Skip unexported fields
+		if !ef.CanInterface() {
+			continue
+		}
+
+		if err := validateField(ctx, tf.Name, ef); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// validateField validates a single field that may implement HasValidation.
+func validateField(ctx context.Context, fieldName string, fieldValue reflect.Value) error {
+	// Handle slices specially
+	if fieldValue.Kind() == reflect.Slice {
+		return validateSlice(ctx, fieldName, fieldValue)
+	}
+
+	// For non-slice types, check if they implement HasValidation
+	if fieldValue.CanInterface() {
+		if validator, ok := fieldValue.Interface().(HasValidation); ok {
+			if err := validator.Validate(ctx); err != nil {
+				return errors.Wrapf(
+					ctx,
+					err,
+					"field %s (type %s) validation failed",
+					fieldName,
+					fieldValue.Type(),
+				)
+			}
+		}
+	}
+
+	return nil
+}
+
+// validateSlice validates a slice field.
+// First checks if the slice type itself implements HasValidation.
+// Falls back to validating each element if they implement HasValidation.
+func validateSlice(ctx context.Context, fieldName string, sliceValue reflect.Value) error {
+	// First, check if the slice itself implements HasValidation
+	if sliceValue.CanInterface() {
+		if validator, ok := sliceValue.Interface().(HasValidation); ok {
+			if err := validator.Validate(ctx); err != nil {
+				return errors.Wrapf(
+					ctx,
+					err,
+					"field %s (type %s) validation failed",
+					fieldName,
+					sliceValue.Type(),
+				)
+			}
+			return nil
+		}
+	}
+
+	// Fallback: validate each element
+	for i := 0; i < sliceValue.Len(); i++ {
+		elem := sliceValue.Index(i)
+		if elem.CanInterface() {
+			if validator, ok := elem.Interface().(HasValidation); ok {
+				if err := validator.Validate(ctx); err != nil {
+					return errors.Wrapf(
+						ctx,
+						err,
+						"field %s[%d] (type %s) validation failed",
+						fieldName,
+						i,
+						elem.Type(),
+					)
+				}
+			}
+		}
+	}
+
+	return nil
+}

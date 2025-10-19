@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log"
 	"reflect"
+	"strings"
 )
 
 // Print all configured arguments. Set display:"hidden" to hide or display:"length" to only print the arguments length.
@@ -39,7 +40,7 @@ func Print(ctx context.Context, data interface{}) error {
 				for j := 0; j < length; j++ {
 					values[j] = fmt.Sprintf("%v", ef.Index(j).Interface())
 				}
-				log.Printf("Argument: %s [%d]: %s", t.Field(i).Name, length, joinWithComma(values))
+				log.Printf("Argument: %s [%d]: %s", t.Field(i).Name, length, strings.Join(values, ", "))
 			}
 		} else if ef.Kind() == reflect.Ptr || ef.Kind() == reflect.Interface {
 			if ef.IsZero() {
@@ -52,15 +53,4 @@ func Print(ctx context.Context, data interface{}) error {
 		}
 	}
 	return nil
-}
-
-func joinWithComma(values []string) string {
-	if len(values) == 0 {
-		return ""
-	}
-	result := values[0]
-	for i := 1; i < len(values); i++ {
-		result += ", " + values[i]
-	}
-	return result
 }

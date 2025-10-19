@@ -25,6 +25,8 @@ type Active bool
 
 type Environment string
 
+type Brokers []Broker
+
 // Broker demonstrates encoding.TextUnmarshaler for custom parsing logic.
 // It adds a default "plain://" schema if none is provided.
 type Broker string
@@ -77,8 +79,9 @@ func main() {
 		AllowedUsers []Username `arg:"allowed_users" env:"ALLOWED_USERS"`
 
 		// TextUnmarshaler types - custom parsing logic
-		Broker  Broker   `arg:"broker" env:"BROKER" default:"localhost:9092"`
-		Brokers []Broker `arg:"brokers" env:"BROKERS"`
+		Broker     Broker   `arg:"broker" env:"BROKER" default:"localhost:9092"`
+		BrokerList []Broker `arg:"broker-list" env:"BROKER_LIST"`
+		Brokers    Brokers  `arg:"brokers" env:"BROKERS"`
 
 		// Time types
 		StdDuration time.Duration    `arg:"std-duration"`
@@ -88,7 +91,7 @@ func main() {
 		Date        libtime.Date     `arg:"date"`
 		UnixTime    libtime.UnixTime `arg:"unixtime"`
 	}
-	if err := argument.Parse(ctx, &data); err != nil {
+	if err := argument.ParseAndPrint(ctx, &data); err != nil {
 		log.Fatalf("parse args failed: %v", err)
 	}
 	encoder := json.NewEncoder(os.Stdout)

@@ -139,13 +139,20 @@ func ValidateRequired(ctx context.Context, data interface{}) error {
 				return createError()
 			}
 		default:
-			// Check if it's a custom type with underlying primitive type
-			if handled, err := handleCustomTypeValidation(ctx, tf, ef, createError); handled {
-				if err != nil {
-					return err
+			// Handle slices
+			if ef.Kind() == reflect.Slice {
+				if ef.Len() == 0 {
+					return createError()
 				}
 			} else {
-				return errors.Errorf(ctx, "field %s with type %T is unsupported", tf.Name, ef.Interface())
+				// Check if it's a custom type with underlying primitive type
+				if handled, err := handleCustomTypeValidation(ctx, tf, ef, createError); handled {
+					if err != nil {
+						return err
+					}
+				} else {
+					return errors.Errorf(ctx, "field %s with type %T is unsupported", tf.Name, ef.Interface())
+				}
 			}
 		}
 	}

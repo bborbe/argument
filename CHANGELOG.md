@@ -8,6 +8,13 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.9.0
+
+- Add slice support for required field validation
+- Improve array/slice output formatting in Print with count and comma-separated values
+- Add comprehensive test coverage for required validation across all supported types
+- Add example_required_test.go with 23 real-world validation examples
+
 ## v2.8.0
 
 - Add support for slice types implementing TextUnmarshaler on the slice itself (e.g., kafka.Brokers)

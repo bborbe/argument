@@ -29,7 +29,19 @@ func Print(ctx context.Context, data interface{}) error {
 			)
 			continue
 		}
-		if ef.Kind() == reflect.Ptr || ef.Kind() == reflect.Interface {
+		if ef.Kind() == reflect.Slice {
+			// Format slices as comma-separated values with count
+			length := ef.Len()
+			if length == 0 {
+				log.Printf("Argument: %s []", t.Field(i).Name)
+			} else {
+				values := make([]string, length)
+				for j := 0; j < length; j++ {
+					values[j] = fmt.Sprintf("%v", ef.Index(j).Interface())
+				}
+				log.Printf("Argument: %s [%d]: %s", t.Field(i).Name, length, joinWithComma(values))
+			}
+		} else if ef.Kind() == reflect.Ptr || ef.Kind() == reflect.Interface {
 			if ef.IsZero() {
 				log.Printf("Argument: %s <nil>", t.Field(i).Name)
 			} else {
@@ -40,4 +52,15 @@ func Print(ctx context.Context, data interface{}) error {
 		}
 	}
 	return nil
+}
+
+func joinWithComma(values []string) string {
+	if len(values) == 0 {
+		return ""
+	}
+	result := values[0]
+	for i := 1; i < len(values); i++ {
+		result += ", " + values[i]
+	}
+	return result
 }

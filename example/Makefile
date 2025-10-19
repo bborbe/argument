@@ -15,6 +15,7 @@ run:
 	-flags="true,false,true,false" \
 	-allowed_users="admin,superuser,guest" \
 	-broker="kafka:9092" \
+	-broker-list="broker-a:9092,ssl://broker-b:9093,broker-c:9094" \
 	-brokers="broker1:9092,ssl://broker2:9093,broker3:9094" \
 	-std-duration=1h30m \
 	-std-time=2023-12-25T10:30:00Z \

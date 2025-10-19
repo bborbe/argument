@@ -383,4 +383,121 @@ var _ = Describe("Required", func() {
 			Expect(err).NotTo(HaveOccurred())
 		})
 	})
+
+	Context("Slice types support", func() {
+		It("returns error if required string slice is empty", func() {
+			args := struct {
+				Names []string `required:"true" arg:"names"`
+			}{
+				Names: []string{},
+			}
+			err := argument.ValidateRequired(ctx, &args)
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(Equal("Required field empty, define parameter names"))
+		})
+
+		It("returns error if required string slice is nil", func() {
+			args := struct {
+				Names []string `required:"true" env:"NAMES"`
+			}{
+				Names: nil,
+			}
+			err := argument.ValidateRequired(ctx, &args)
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(Equal("Required field empty, define env NAMES"))
+		})
+
+		It("returns no error if required string slice has elements", func() {
+			args := struct {
+				Names []string `required:"true"`
+			}{
+				Names: []string{"alice", "bob"},
+			}
+			err := argument.ValidateRequired(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("returns error if required int slice is empty", func() {
+			args := struct {
+				Ports []int `required:"true" arg:"ports" env:"PORTS"`
+			}{
+				Ports: []int{},
+			}
+			err := argument.ValidateRequired(ctx, &args)
+			Expect(err).To(HaveOccurred())
+			Expect(
+				err.Error(),
+			).To(Equal("Required field empty, define parameter ports or define env PORTS"))
+		})
+
+		It("returns no error if required int slice has elements", func() {
+			args := struct {
+				Ports []int `required:"true"`
+			}{
+				Ports: []int{8080, 9090},
+			}
+			err := argument.ValidateRequired(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("returns no error if slice is not required and empty", func() {
+			args := struct {
+				Names []string // not required
+			}{
+				Names: []string{},
+			}
+			err := argument.ValidateRequired(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("handles multiple required slices", func() {
+			args := struct {
+				Names  []string `required:"true"`
+				Ports  []int    `required:"true"`
+				Prices []float64
+			}{
+				Names:  []string{"alice"},
+				Ports:  []int{8080},
+				Prices: []float64{}, // not required, ok to be empty
+			}
+			err := argument.ValidateRequired(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("returns error for first empty required slice", func() {
+			args := struct {
+				Names []string `required:"true" arg:"names"`
+				Ports []int    `required:"true" arg:"ports"`
+			}{
+				Names: []string{}, // empty, should fail here
+				Ports: []int{8080},
+			}
+			err := argument.ValidateRequired(ctx, &args)
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(Equal("Required field empty, define parameter names"))
+		})
+
+		It("handles custom type slices", func() {
+			type Broker string
+			args := struct {
+				Brokers []Broker `required:"true"`
+			}{
+				Brokers: []Broker{"broker1", "broker2"},
+			}
+			err := argument.ValidateRequired(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("returns error for empty custom type slice", func() {
+			type Broker string
+			args := struct {
+				Brokers []Broker `required:"true" env:"BROKERS"`
+			}{
+				Brokers: []Broker{},
+			}
+			err := argument.ValidateRequired(ctx, &args)
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(Equal("Required field empty, define env BROKERS"))
+		})
+	})
 })

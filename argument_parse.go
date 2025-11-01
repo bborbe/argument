@@ -137,7 +137,7 @@ func ParseAndPrint(ctx context.Context, data interface{}) error {
 //
 // See Parse() documentation for supported types and struct tag options.
 func ParseOnly(ctx context.Context, data interface{}) error {
-	argsValues, err := argsToValues(ctx, data, os.Args[1:])
+	argsValues, err := argsToValuesExplicit(ctx, data, os.Args[1:])
 	if err != nil {
 		return errors.Wrap(ctx, err, "arg to values failed")
 	}
@@ -149,7 +149,7 @@ func ParseOnly(ctx context.Context, data interface{}) error {
 	if err != nil {
 		return errors.Wrap(ctx, err, "default values failed")
 	}
-	if err := Fill(ctx, data, mergeValues(defaultValues, argsValues, envValues)); err != nil {
+	if err := Fill(ctx, data, mergeValues(defaultValues, envValues, argsValues)); err != nil {
 		return errors.Wrap(ctx, err, "fill failed")
 	}
 	return nil

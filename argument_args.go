@@ -583,3 +583,43 @@ func argsToValues(
 	}
 	return values, nil
 }
+
+// argsToValuesExplicit returns only values that were explicitly set via command-line arguments.
+// Unlike argsToValues, this does not include default values for unset flags.
+// This is used internally to ensure proper precedence: args > env > defaults.
+func argsToValuesExplicit(
+	ctx context.Context,
+	data interface{},
+	args []string,
+) (map[string]interface{}, error) {
+	// First get all values (including defaults)
+	allValues, err := argsToValues(ctx, data, args)
+	if err != nil {
+		return nil, err
+	}
+
+	// Then filter to only explicitly-set flags
+	actuallySet := make(map[string]interface{})
+	visitedFlags := make(map[string]bool)
+	flag.CommandLine.Visit(func(f *flag.Flag) {
+		visitedFlags[f.Name] = true
+	})
+
+	// Map flag names back to struct field names
+	e := reflect.ValueOf(data).Elem()
+	t := e.Type()
+	for i := 0; i < e.NumField(); i++ {
+		tf := t.Field(i)
+		argName, ok := tf.Tag.Lookup("arg")
+		if !ok {
+			continue
+		}
+		if visitedFlags[argName] {
+			if val, exists := allValues[tf.Name]; exists {
+				actuallySet[tf.Name] = val
+			}
+		}
+	}
+
+	return actuallySet, nil
+}

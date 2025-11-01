@@ -6,6 +6,8 @@ package argument
 
 import "context"
 
+//counterfeiter:generate -o mocks/has_validation.go --fake-name HasValidation . HasValidation
+
 // HasValidation defines the interface that validators must implement.
 // It provides a single method for validating data with context support.
 // Types implementing this interface can define custom validation logic

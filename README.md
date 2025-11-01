@@ -218,11 +218,15 @@ Use cases:
 
 ## Priority Order
 
-Values are applied in the following priority order (higher priority overwrites lower):
+Values are applied with the following precedence (highest priority first):
 
-1. **Default values** (from `default:` tag)
-2. **Environment variables** (from `env:` tag)  
-3. **Command-line arguments** (from `arg:` tag)
+1. **Command-line arguments** (from `arg:` tag) - **Highest priority**
+2. **Environment variables** (from `env:` tag)
+3. **Default values** (from `default:` tag) - Lowest priority
+
+Command-line arguments override environment variables, which override default values.
+
+**Example**: If you have `default:"8080"`, set `PORT=9000` environment variable, and pass `-port=9090` on the command line, the final value will be **9090** (command-line argument wins).
 
 ## API Documentation
 

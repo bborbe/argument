@@ -6,14 +6,17 @@ package argument_test
 
 import (
 	"testing"
+	"time"
 
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/format"
 )
 
-func TestArgument(t *testing.T) {
+//go:generate go run -mod=mod github.com/maxbrunsfeld/counterfeiter/v6 -generate
+func TestSuite(t *testing.T) {
+	time.Local = time.UTC
 	format.TruncatedDiff = false
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Argument Suite")
+	RunSpecs(t, "Test Suite")
 }

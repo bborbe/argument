@@ -8,6 +8,25 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.11.0
+
+**BREAKING BEHAVIOR CHANGE**: Fixed argument precedence to match documentation and standard CLI tool behavior
+
+- Fix precedence bug: command-line arguments now correctly override environment variables
+- Previous (incorrect) behavior: env vars overrode args when both were provided
+- New (correct) behavior: args > env > defaults (matches Docker, Kubernetes, most CLI tools)
+- Add `argsToValuesExplicit()` internal function to filter only explicitly-set command-line flags
+- Update `ParseOnly()` to use explicit args filtering and correct merge order
+- Update test expectations to validate correct precedence behavior
+- Upgrade test framework from Ginkgo v1 to Ginkgo v2 (all 11 test files)
+- Add counterfeiter mock generation for `HasValidation` interface
+- Add UTC timezone configuration to test suite to prevent timezone-dependent failures
+- Enable race detection in test suite for concurrent safety validation
+- Add `github.com/shoenig/go-modtool` for go.mod formatting
+- Update README priority order documentation to match correct behavior
+- No API changes: all public function signatures remain identical
+- Migration: verify configuration sources if code relied on env-override-args behavior
+
 ## v2.10.0
 
 - Add `HasValidation` interface for custom field validation with `Validate(context.Context) error` method

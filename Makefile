@@ -10,6 +10,7 @@ ensure:
 	rm -rf vendor
 
 format:
+	find . -type f -name 'go.mod' -not -path './vendor/*' -exec go run -mod=mod github.com/shoenig/go-modtool -w fmt "{}" \;
 	find . -type f -name '*.go' -not -path './vendor/*' -exec gofmt -w "{}" +
 	go run -mod=mod github.com/incu6us/goimports-reviser/v3 -project-name github.com/bborbe/argument -format -excludes vendor ./...
 	find . -type d -name vendor -prune -o -type f -name '*.go' -print0 | xargs -0 -n 10 go run -mod=mod github.com/segmentio/golines --max-len=100 -w
@@ -20,8 +21,7 @@ generate:
 
 .PHONY: test
 test:
-	# -race
-	go test -mod=mod -p=$${GO_TEST_PARALLEL:-1} -cover $(shell go list -mod=mod ./... | grep -v /vendor/)
+	go test -mod=mod -p=$${GO_TEST_PARALLEL:-1} -cover -race $(shell go list -mod=mod ./... | grep -v /vendor/)
 
 # TODO: enable lint
 # check: lint vet errcheck vulncheck osv-scanner gosec trivy

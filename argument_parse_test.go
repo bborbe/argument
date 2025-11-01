@@ -11,7 +11,7 @@ import (
 	"os"
 
 	"github.com/bborbe/errors"
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
 	"github.com/bborbe/argument/v2"
@@ -99,7 +99,7 @@ var _ = Describe("Parse", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(args.Username).To(Equal("Ben"))
 	})
-	It("use env if both are defined", func() {
+	It("use arg if both arg and env are defined", func() {
 		var args struct {
 			Username string `arg:"user" env:"user"`
 		}
@@ -107,7 +107,7 @@ var _ = Describe("Parse", func() {
 		_ = os.Setenv("user", "Env")
 		err := argument.Parse(ctx, &args)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(args.Username).To(Equal("Env"))
+		Expect(args.Username).To(Equal("Arg"))
 	})
 	It("use flag if defined", func() {
 		var args struct {

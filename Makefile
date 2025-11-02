@@ -1,7 +1,7 @@
 
 default: precommit
 
-precommit: ensure format generate test check addlicense
+precommit: ensure format generate test check lint addlicense
 	@echo "ready to commit"
 
 ensure:

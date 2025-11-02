@@ -226,7 +226,63 @@ Values are applied with the following precedence (highest priority first):
 
 Command-line arguments override environment variables, which override default values.
 
-**Example**: If you have `default:"8080"`, set `PORT=9000` environment variable, and pass `-port=9090` on the command line, the final value will be **9090** (command-line argument wins).
+### Priority Example
+
+Here's a complete example demonstrating how the priority works:
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "log"
+
+    "github.com/bborbe/argument/v2"
+)
+
+func main() {
+    var config struct {
+        Port int `arg:"port" env:"PORT" default:"8080"`
+    }
+
+    ctx := context.Background()
+    if err := argument.Parse(ctx, &config); err != nil {
+        log.Fatalf("Failed to parse: %v", err)
+    }
+
+    fmt.Printf("Port: %d\n", config.Port)
+}
+```
+
+Running this program with different inputs shows the priority order:
+
+```bash
+# 1. Only default value (no env, no arg)
+$ go run main.go
+Port: 8080
+
+# 2. Environment variable overrides default
+$ PORT=9000 go run main.go
+Port: 9000
+
+# 3. Command-line argument overrides environment variable
+$ PORT=9000 go run main.go -port=7000
+Port: 7000
+
+# 4. Command-line argument overrides default (no env set)
+$ go run main.go -port=7000
+Port: 7000
+```
+
+**Summary**: The final value is **7000** (from `-port=7000`) when both env and arg are provided, demonstrating that command-line arguments have the highest priority.
+
+**Note**: If no `default` tag is specified and neither environment variable nor argument is provided, the field will contain its Go zero value:
+- Numbers: `0` (int, float64, etc.)
+- Strings: `""` (empty string)
+- Booleans: `false`
+- Pointers: `nil`
+- Slices: `nil`
 
 ## API Documentation
 
@@ -279,56 +335,6 @@ if err != nil {
     log.Fatal(err)
 }
 ```
-
-## Development
-
-### Running Tests
-```bash
-make test
-```
-
-### Code Generation (Mocks)
-```bash
-make generate
-```
-
-### Format Code
-```bash
-make format
-```
-
-### Full Development Workflow
-```bash
-make precommit  # Format, generate, test, and check
-```
-
-### Linting
-```bash
-make check  # Run vet, errcheck, vulncheck, and security scanners
-```
-
-## Version 2 Changes
-
-Version 2.3.0 introduced breaking changes for better library behavior:
-
-- `Parse()` no longer prints configuration by default (quieter)
-- New `ParseAndPrint()` function when you want to display parsed values
-- Focus on library-like behavior vs CLI tool behavior
-
-## Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes following the existing code style
-4. Run `make precommit` to ensure all checks pass
-5. Submit a pull request
-
-This project uses:
-- Ginkgo/Gomega for BDD-style testing
-- Counterfeiter for mock generation
-- Standard Go formatting and linting tools
 
 ## License
 

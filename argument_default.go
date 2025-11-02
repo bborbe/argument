@@ -15,6 +15,7 @@ import (
 	libtime "github.com/bborbe/time"
 )
 
+//nolint:dupl // TODO: Extract shared logic with handleCustomTypeEnv to eliminate duplication
 func handleCustomTypeDefault(
 	ctx context.Context,
 	values map[string]interface{},
@@ -188,6 +189,7 @@ func DefaultValues(ctx context.Context, data interface{}) (map[string]interface{
 				return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
 			}
 			values[tf.Name] = duration.Duration()
+		//nolint:dupl // TODO: Extract shared type handling logic with envToValues switch statement
 		default:
 			// Check if type implements encoding.TextUnmarshaler BEFORE checking for slice
 			// This allows slice types like kafka.Brokers to implement TextUnmarshaler on the slice itself

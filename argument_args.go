@@ -206,6 +206,7 @@ func parseSliceFromString(
 	}
 }
 
+//nolint:gocyclo // TODO: Refactor to reduce complexity (currently 101, limit is 30)
 func argsToValues(
 	ctx context.Context,
 	data interface{},

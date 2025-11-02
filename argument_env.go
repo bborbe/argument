@@ -35,6 +35,7 @@ func ParseEnv(ctx context.Context, data interface{}, environ []string) error {
 	return nil
 }
 
+//nolint:dupl // TODO: Extract shared logic with handleCustomTypeDefault to eliminate duplication
 func handleCustomTypeEnv(
 	ctx context.Context,
 	values map[string]interface{},
@@ -145,6 +146,7 @@ func handleCustomTypeEnv(
 	return false, nil
 }
 
+//nolint:gocyclo // TODO: Refactor to reduce complexity (currently 53, limit is 30)
 func envToValues(
 	ctx context.Context,
 	data interface{},
@@ -284,6 +286,7 @@ func envToValues(
 				return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
 			}
 			values[tf.Name] = *unixTime
+		//nolint:dupl // TODO: Extract shared type handling logic with defaultToValues switch statement
 		default:
 			// Check if type implements encoding.TextUnmarshaler BEFORE checking for slice
 			// This allows slice types like kafka.Brokers to implement TextUnmarshaler on the slice itself

@@ -81,12 +81,17 @@ func main() {
 		Username          Username `arg:"username" default:"ben"`
 		Password          Password `arg:"password" display:"length"`
 		Active            *Active  `arg:"active"`
-		Url               string   `arg:"url"`
+		URL               string   `arg:"url"`
 		DefaultWithoutArg string   `arg:"defaultWithoutArg" default:"hello world"`
 		DefaultWithArg    string   `arg:"defaultWithArg" default:"hello world"`
 		Int               int      `arg:"int"`
 		Float64           float64  `arg:"float64"`
 		Float64Ptr        *float64 `arg:"float64Ptr"`
+
+		// Priority examples: arg > env > default
+		PriorityDefault string `arg:"prio-default" env:"PRIO_DEFAULT" default:"default value"`
+		PriorityEnv     string `arg:"prio-env" env:"PRIO_ENV" default:"default value"`
+		PriorityArg     string `arg:"prio-arg" env:"PRIO_ARG" default:"default value"`
 
 		// Slice types - string slices
 		Names        []string      `arg:"names" env:"NAMES" default:"alice,bob"`

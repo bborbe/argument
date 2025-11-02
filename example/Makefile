@@ -1,5 +1,13 @@
+# Priority demonstration: arg > env > default
+# Expected output:
+#   PriorityDefault: "default value" (no env or arg set)
+#   PriorityEnv: "env value overwrite default" (PRIO_ENV set)
+#   PriorityArg: "arg value overwrite env and default" (-prio-arg overrides PRIO_ARG)
 run:
+	PRIO_ENV="env value overwrite default" \
+	PRIO_ARG="env value overwrite default" \
 	go run main.go \
+	-prio-arg="arg value overwrite env and default" \
 	-password="1337" \
 	-url="http://example.com" \
 	-defaultWithArg="banana" \

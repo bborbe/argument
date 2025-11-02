@@ -8,6 +8,20 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.11.1
+
+- Enhance documentation with comprehensive priority examples (arg > env > default)
+- Add zero-value documentation for fields without defaults
+- Improve golangci-lint configuration with additional linters (gofmt, goimports, errname, bodyclose, asasalint, prealloc)
+- Add io/ioutil deprecation rule to depguard
+- Add nolint comments for existing technical debt (duplication and complexity)
+- Integrate lint into precommit workflow
+- Fix naming conventions (Url → URL, ApiKey → APIKey)
+- Remove duplicate test file (example_required_test.go)
+- Remove example/doc.go (documentation belongs in main package)
+- Streamline README by removing Development and Contributing sections
+- Improve example Makefile with priority demonstration comments
+
 ## v2.11.0
 
 **BREAKING BEHAVIOR CHANGE**: Fixed argument precedence to match documentation and standard CLI tool behavior

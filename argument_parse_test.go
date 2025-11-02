@@ -159,14 +159,14 @@ var _ = Describe("Parse", func() {
 
 		It("handles environment variables and prints them", func() {
 			var args struct {
-				ApiKey string `arg:"api-key" env:"API_KEY" default:"secret"`
+				APIKey string `arg:"api-key" env:"API_KEY" default:"secret"`
 			}
 			_ = os.Setenv("API_KEY", "env-value")
 			os.Args = []string{"go"}
 
 			err := argument.ParseAndPrint(ctx, &args)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(args.ApiKey).To(Equal("env-value"))
+			Expect(args.APIKey).To(Equal("env-value"))
 		})
 
 		It("handles complex configuration with mixed sources", func() {

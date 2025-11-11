@@ -8,6 +8,15 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.11.2
+
+- Update Go version from 1.25.3 to 1.25.4 in CI workflow
+- Update github.com/shoenig/go-modtool from v0.4.0 to v0.5.0
+- Update github.com/containerd/containerd from v1.7.27 to v1.7.29
+- Update github.com/cyphar/filepath-securejoin from v0.5.0 to v0.6.0
+- Update github.com/opencontainers/selinux from v1.12.0 to v1.13.0
+- Add cyphar.com/go-pathrs v0.2.1 dependency
+
 ## v2.11.1
 
 - Enhance documentation with comprehensive priority examples (arg > env > default)

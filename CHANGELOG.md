@@ -8,6 +8,12 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.11.3
+
+- Update github.com/google/osv-scanner from v2.2.4 to v2.3.0
+- Update github.com/incu6us/goimports-reviser from v3.10.0 to v3.11.0
+- Update multiple indirect dependencies
+
 ## v2.11.2
 
 - Update Go version from 1.25.3 to 1.25.4 in CI workflow

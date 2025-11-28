@@ -8,6 +8,12 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.11.4
+
+- Improve Makefile organization with .PHONY declarations for all targets
+- Reorganize check target to include lint alongside other quality checks
+- Remove TODO comment and enable lint in check target
+
 ## v2.11.3
 
 - Update github.com/google/osv-scanner from v2.2.4 to v2.3.0

@@ -8,6 +8,10 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.12.0
+
+- update go and deps
+
 ## v2.11.4
 
 - Improve Makefile organization with .PHONY declarations for all targets

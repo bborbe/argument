@@ -8,6 +8,15 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.12.1
+
+- Update Go to 1.25.5
+- Update golang.org/x/crypto to v0.47.0
+- Update bborbe dependencies (errors v1.5.0, time v1.21.0, collection v1.20.0, parse v1.9.1, run v1.8.3)
+- Update testing dependencies (ginkgo v2.27.5, gomega v1.39.0)
+- Update security tools (gosec v2.22.11, osv-scanner v2.3.1)
+- Update indirect dependencies
+
 ## v2.12.0
 
 - update go and deps

@@ -63,6 +63,17 @@ func (c *testValidatingConfig) Validate(ctx context.Context) error {
 	return nil
 }
 
+type testDateTime struct {
+	value string
+}
+
+func (d *testDateTime) Validate(ctx context.Context) error {
+	if d.value == "" {
+		return errors.New(ctx, "datetime cannot be empty")
+	}
+	return nil
+}
+
 var _ = Describe("HasValidation", func() {
 	var ctx context.Context
 	BeforeEach(func() {
@@ -280,6 +291,66 @@ var _ = Describe("HasValidation", func() {
 			err := validate(ctx, config.Port)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(portValidateCalled).To(BeTrue())
+		})
+	})
+
+	Context("Nil pointer handling", func() {
+		It("handles nil pointer fields implementing HasValidation without panic", func() {
+			type Config struct {
+				BuildDate *testDateTime
+			}
+
+			// Nil pointer should not panic
+			config := &Config{BuildDate: nil}
+			err := argument.ValidateHasValidation(ctx, config)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("validates non-nil pointer fields implementing HasValidation", func() {
+			type Config struct {
+				BuildDate *testDateTime
+			}
+
+			// Non-nil pointer with invalid value should fail validation
+			config := &Config{BuildDate: &testDateTime{value: ""}}
+			err := argument.ValidateHasValidation(ctx, config)
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("datetime cannot be empty"))
+
+			// Non-nil pointer with valid value should pass
+			config = &Config{BuildDate: &testDateTime{value: "2025-01-26"}}
+			err = argument.ValidateHasValidation(ctx, config)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("required nil pointer is caught by ValidateRequired, not ValidateHasValidation", func() {
+			type Config struct {
+				BuildDate *testDateTime `required:"true"`
+			}
+
+			// Nil pointer marked as required should fail in ValidateRequired
+			config := &Config{BuildDate: nil}
+			err := argument.ValidateRequired(ctx, config)
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("Required field empty"))
+
+			// ValidateHasValidation should skip nil (ValidateRequired already caught it)
+			err = argument.ValidateHasValidation(ctx, config)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("optional nil pointer skips both validations", func() {
+			type Config struct {
+				BuildDate *testDateTime // optional, no required tag
+			}
+
+			// Nil optional pointer should pass both validations
+			config := &Config{BuildDate: nil}
+			err := argument.ValidateRequired(ctx, config)
+			Expect(err).NotTo(HaveOccurred())
+
+			err = argument.ValidateHasValidation(ctx, config)
+			Expect(err).NotTo(HaveOccurred())
 		})
 	})
 

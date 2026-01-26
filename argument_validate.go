@@ -76,83 +76,97 @@ func ValidateRequired(ctx context.Context, data interface{}) error {
 		if !ok || argName != "true" {
 			continue
 		}
-		createError := func() error {
-			buf := bytes.NewBufferString("Required field empty, ")
-			argName, argOk := tf.Tag.Lookup("arg")
-			if argOk {
-				fmt.Fprintf(buf, "define parameter %s", argName)
-			}
-			envName, envOk := tf.Tag.Lookup("env")
-			if envOk {
-				if argOk {
-					fmt.Fprintf(buf, " or ")
-				}
-				fmt.Fprintf(buf, "define env %s", envName)
-			}
-			return errors.New(ctx, buf.String())
+		if err := validateRequiredField(ctx, tf, ef); err != nil {
+			return err
 		}
-		switch ef.Interface().(type) {
-		case string:
-			var empty string
-			if empty == ef.Interface() {
+	}
+	return nil
+}
+
+// validateRequiredField checks if a single required field is set.
+func validateRequiredField(ctx context.Context, tf reflect.StructField, ef reflect.Value) error {
+	createError := func() error {
+		buf := bytes.NewBufferString("Required field empty, ")
+		argName, argOk := tf.Tag.Lookup("arg")
+		if argOk {
+			fmt.Fprintf(buf, "define parameter %s", argName)
+		}
+		envName, envOk := tf.Tag.Lookup("env")
+		if envOk {
+			if argOk {
+				fmt.Fprintf(buf, " or ")
+			}
+			fmt.Fprintf(buf, "define env %s", envName)
+		}
+		return errors.New(ctx, buf.String())
+	}
+
+	switch ef.Interface().(type) {
+	case string:
+		var empty string
+		if empty == ef.Interface() {
+			return createError()
+		}
+	case bool:
+	case int:
+		var empty int
+		if empty == ef.Interface() {
+			return createError()
+		}
+	case int64:
+		var empty int64
+		if empty == ef.Interface() {
+			return createError()
+		}
+	case uint:
+		var empty uint
+		if empty == ef.Interface() {
+			return createError()
+		}
+	case uint64:
+		var empty uint64
+		if empty == ef.Interface() {
+			return createError()
+		}
+	case int32:
+		var empty int32
+		if empty == ef.Interface() {
+			return createError()
+		}
+	case float64:
+		var empty float64
+		if empty == ef.Interface() {
+			return createError()
+		}
+	case *float64:
+		var empty *float64
+		if empty == ef.Interface() {
+			return createError()
+		}
+	case time.Duration:
+		var empty time.Duration
+		if empty == ef.Interface() {
+			return createError()
+		}
+	default:
+		// Handle pointers
+		if ef.Kind() == reflect.Ptr {
+			if ef.IsNil() {
 				return createError()
 			}
-		case bool:
-		case int:
-			var empty int
-			if empty == ef.Interface() {
-				return createError()
-			}
-		case int64:
-			var empty int64
-			if empty == ef.Interface() {
-				return createError()
-			}
-		case uint:
-			var empty uint
-			if empty == ef.Interface() {
-				return createError()
-			}
-		case uint64:
-			var empty uint64
-			if empty == ef.Interface() {
-				return createError()
-			}
-		case int32:
-			var empty int32
-			if empty == ef.Interface() {
-				return createError()
-			}
-		case float64:
-			var empty float64
-			if empty == ef.Interface() {
-				return createError()
-			}
-		case *float64:
-			var empty *float64
-			if empty == ef.Interface() {
-				return createError()
-			}
-		case time.Duration:
-			var empty time.Duration
-			if empty == ef.Interface() {
-				return createError()
-			}
-		default:
+		} else if ef.Kind() == reflect.Slice {
 			// Handle slices
-			if ef.Kind() == reflect.Slice {
-				if ef.Len() == 0 {
-					return createError()
+			if ef.Len() == 0 {
+				return createError()
+			}
+		} else {
+			// Check if it's a custom type with underlying primitive type
+			if handled, err := handleCustomTypeValidation(ctx, tf, ef, createError); handled {
+				if err != nil {
+					return err
 				}
 			} else {
-				// Check if it's a custom type with underlying primitive type
-				if handled, err := handleCustomTypeValidation(ctx, tf, ef, createError); handled {
-					if err != nil {
-						return err
-					}
-				} else {
-					return errors.Errorf(ctx, "field %s with type %T is unsupported", tf.Name, ef.Interface())
-				}
+				return errors.Errorf(ctx, "field %s with type %T is unsupported", tf.Name, ef.Interface())
 			}
 		}
 	}
@@ -271,6 +285,11 @@ func validateField(ctx context.Context, fieldName string, fieldValue reflect.Val
 
 	// For non-slice types, check if they implement HasValidation
 	if fieldValue.CanInterface() {
+		// Skip nil pointers to avoid panic when calling methods
+		if fieldValue.Kind() == reflect.Ptr && fieldValue.IsNil() {
+			return nil
+		}
+
 		if validator, ok := fieldValue.Interface().(HasValidation); ok {
 			if err := validator.Validate(ctx); err != nil {
 				return errors.Wrapf(

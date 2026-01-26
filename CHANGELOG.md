@@ -8,6 +8,13 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.12.2
+
+- Fix nil pointer panic in ValidateHasValidation when validating fields with nil pointer values
+- Add generic pointer nil check in ValidateRequired to handle all pointer types consistently
+- Refactor ValidateRequired into helper function to reduce cyclomatic complexity
+- Add comprehensive test coverage for nil pointer handling (required and optional fields)
+
 ## v2.12.1
 
 - Update Go to 1.25.5

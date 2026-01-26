@@ -384,6 +384,83 @@ var _ = Describe("Required", func() {
 		})
 	})
 
+	Context("Generic pointer types support", func() {
+		It("returns error if required *int is nil", func() {
+			args := struct {
+				Age *int `required:"true" arg:"age"`
+			}{
+				Age: nil,
+			}
+			err := argument.ValidateRequired(ctx, &args)
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(Equal("Required field empty, define parameter age"))
+		})
+
+		It("returns no error if required *int is not nil", func() {
+			v := 42
+			args := struct {
+				Age *int `required:"true"`
+			}{
+				Age: &v,
+			}
+			err := argument.ValidateRequired(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("returns error if required *string is nil", func() {
+			args := struct {
+				Name *string `required:"true" env:"NAME"`
+			}{
+				Name: nil,
+			}
+			err := argument.ValidateRequired(ctx, &args)
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(Equal("Required field empty, define env NAME"))
+		})
+
+		It("returns no error if required *string is not nil", func() {
+			v := "test"
+			args := struct {
+				Name *string `required:"true"`
+			}{
+				Name: &v,
+			}
+			err := argument.ValidateRequired(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("returns error if required *time.Duration is nil", func() {
+			args := struct {
+				Timeout *time.Duration `required:"true"`
+			}{
+				Timeout: nil,
+			}
+			err := argument.ValidateRequired(ctx, &args)
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("returns no error if required *time.Duration is not nil", func() {
+			v := time.Second
+			args := struct {
+				Timeout *time.Duration `required:"true"`
+			}{
+				Timeout: &v,
+			}
+			err := argument.ValidateRequired(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("returns no error if optional pointer is nil", func() {
+			args := struct {
+				Age *int // not required
+			}{
+				Age: nil,
+			}
+			err := argument.ValidateRequired(ctx, &args)
+			Expect(err).NotTo(HaveOccurred())
+		})
+	})
+
 	Context("Slice types support", func() {
 		It("returns error if required string slice is empty", func() {
 			args := struct {

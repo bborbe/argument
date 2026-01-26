@@ -8,6 +8,14 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.12.3
+
+- update golang to 1.25.6
+- update github.com/bborbe/errors to v1.5.1
+- update github.com/bborbe/time to v1.21.1
+- update golangci-lint to v1.64.8
+- add CI workflow
+
 ## v2.12.2
 
 - Fix nil pointer panic in ValidateHasValidation when validating fields with nil pointer values

@@ -8,6 +8,12 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.12.4
+
+- Update ginkgo v2.27.5 → v2.28.1
+- Update gomega v1.39.0 → v1.39.1
+- Update golang.org/x dependencies (mod, net, tools, telemetry, pprof)
+
 ## v2.12.3
 
 - update golang to 1.25.6

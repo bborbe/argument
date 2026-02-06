@@ -1,22 +1,22 @@
 module github.com/bborbe/argument/v2
 
-go 1.25.6
+go 1.25.7
 
 replace (
 	k8s.io/kube-openapi => k8s.io/kube-openapi v0.0.0-20250701173324-9bd5c66d9911
 )
 
 require (
-	github.com/bborbe/errors v1.5.1
-	github.com/bborbe/time v1.21.1
+	github.com/bborbe/errors v1.5.2
+	github.com/bborbe/time v1.22.0
 	github.com/golangci/golangci-lint v1.64.8
 	github.com/google/addlicense v1.2.0
 	github.com/google/osv-scanner/v2 v2.3.2
 	github.com/incu6us/goimports-reviser/v3 v3.11.0
 	github.com/kisielk/errcheck v1.9.0
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.12.1
-	github.com/onsi/ginkgo/v2 v2.27.5
-	github.com/onsi/gomega v1.39.0
+	github.com/onsi/ginkgo/v2 v2.28.1
+	github.com/onsi/gomega v1.39.1
 	github.com/securego/gosec/v2 v2.22.11
 	github.com/segmentio/golines v0.13.0
 	github.com/shoenig/go-modtool v0.5.0
@@ -74,10 +74,10 @@ require (
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/bborbe/collection v1.20.1 // indirect
-	github.com/bborbe/math v1.2.1 // indirect
-	github.com/bborbe/parse v1.10.0 // indirect
+	github.com/bborbe/math v1.3.0 // indirect
+	github.com/bborbe/parse v1.10.1 // indirect
 	github.com/bborbe/run v1.9.1 // indirect
-	github.com/bborbe/validation v1.4.0 // indirect
+	github.com/bborbe/validation v1.4.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bkielbasa/cyclop v1.2.3 // indirect
 	github.com/blizzy78/varnamelen v0.8.0 // indirect
@@ -187,7 +187,7 @@ require (
 	github.com/google/go-containerregistry v0.20.6 // indirect
 	github.com/google/jsonschema-go v0.3.0 // indirect
 	github.com/google/osv-scalibr v0.4.2-0.20260109123902-cf20290d7624 // indirect
-	github.com/google/pprof v0.0.0-20251002213607-436353cc1ee6 // indirect
+	github.com/google/pprof v0.0.0-20260115054156-294ebfa9ad83 // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.6 // indirect
@@ -390,15 +390,15 @@ require (
 	golang.org/x/exp v0.0.0-20251009144603-d2f985daa21b // indirect
 	golang.org/x/exp/typeparams v0.0.0-20250210185358-939b2ce775ac // indirect
 	golang.org/x/lint v0.0.0-20241112194109-818c5a804067 // indirect
-	golang.org/x/mod v0.31.0 // indirect
-	golang.org/x/net v0.48.0 // indirect
+	golang.org/x/mod v0.32.0 // indirect
+	golang.org/x/net v0.49.0 // indirect
 	golang.org/x/oauth2 v0.32.0 // indirect
 	golang.org/x/sync v0.19.0 // indirect
 	golang.org/x/sys v0.40.0 // indirect
-	golang.org/x/telemetry v0.0.0-20251203150158-8fff8a5912fc // indirect
+	golang.org/x/telemetry v0.0.0-20260109210033-bd525da824e2 // indirect
 	golang.org/x/term v0.39.0 // indirect
 	golang.org/x/text v0.33.0 // indirect
-	golang.org/x/tools v0.40.0 // indirect
+	golang.org/x/tools v0.41.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da // indirect
 	google.golang.org/genai v1.37.0 // indirect
 	google.golang.org/genproto v0.0.0-20250707201910-8d1bb00bc6a7 // indirect

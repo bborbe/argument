@@ -117,7 +117,7 @@ func handleCustomTypeEnv(
 			}
 			return true, nil
 		case reflect.Int32:
-			v, err := strconv.ParseInt(value, 10, 0)
+			v, err := strconv.ParseInt(value, 10, 32)
 			if err != nil {
 				return true, errors.Errorf(
 					ctx,
@@ -204,7 +204,7 @@ func envToValues(
 				return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
 			}
 		case int32:
-			v, err := strconv.ParseInt(value, 10, 0)
+			v, err := strconv.ParseInt(value, 10, 32)
 			if err != nil {
 				return nil, errors.Errorf(ctx, "parse field %s as %T failed: %v", tf.Name, ef.Interface(), err)
 			}

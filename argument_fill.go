@@ -38,6 +38,14 @@ func Fill(ctx context.Context, data interface{}, values map[string]interface{}) 
 			continue
 		}
 
+		// If the value implements json.Marshaler, let JSON encoding handle it directly.
+		// This is important for types like UnixTime where MarshalJSON and MarshalText
+		// produce different formats (e.g., integer vs ISO string).
+		if _, ok := v.(json.Marshaler); ok {
+			jsonValues[k] = v
+			continue
+		}
+
 		// Check if the value itself implements encoding.TextMarshaler (including slices)
 		// This must be checked BEFORE checking element types, because types like
 		// kafka.Brokers implement TextUnmarshaler on the slice type itself

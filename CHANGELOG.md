@@ -8,6 +8,13 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.12.6
+
+- Fix Fill to prefer json.Marshaler over TextMarshaler for JSON round-trip compatibility
+- Update github.com/bborbe/time to v1.24.0
+- Update github.com/bborbe/errors to v1.5.3
+- Fix gosec G115 warnings for int32 conversions
+
 ## v2.12.5
 
 - Update Go to 1.26.0

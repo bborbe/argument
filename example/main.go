@@ -129,7 +129,7 @@ func main() {
 	}
 	encoder := json.NewEncoder(os.Stdout)
 	encoder.SetIndent("", "  ")
-	if err := encoder.Encode(data); err != nil { //nolint:gosec // G117: example program intentionally prints all fields
+	if err := encoder.Encode(data); err != nil { // #nosec G117 -- example program intentionally prints all fields
 		log.Fatalf("encode data failed: %v", err)
 	}
 

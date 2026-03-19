@@ -8,6 +8,14 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.12.8
+
+- Update bborbe/errors to v1.5.4 and bborbe/time to v1.25.0
+- Update osv-scanner to v2.3.4 and osv-scalibr
+- Update golang.org/x/sync, x/sys, grpc, and opentelemetry
+- Remove k8s replace/exclude blocks and unused indirect deps
+- Bump docker/cli, go-git, charmbracelet, and other indirect deps
+
 ## v2.12.7
 
 - go mod update

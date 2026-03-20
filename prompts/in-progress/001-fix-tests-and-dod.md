@@ -1,5 +1,11 @@
 ---
-status: created
+status: failed
+container: argument-001-fix-tests-and-dod
+dark-factory-version: v0.57.5
+created: "2026-03-20T12:58:05Z"
+queued: "2026-03-20T12:58:05Z"
+started: "2026-03-20T12:58:15Z"
+completed: "2026-03-20T13:56:21Z"
 ---
 
 <summary>

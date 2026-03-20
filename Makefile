@@ -8,7 +8,7 @@ precommit: ensure format generate test check addlicense
 
 .PHONY: ensure
 ensure:
-	go mod tidy
+	go mod tidy -e
 	go mod verify
 	rm -rf vendor
 
@@ -22,6 +22,8 @@ format:
 .PHONY: generate
 generate:
 	rm -rf mocks avro
+	mkdir -p mocks
+	echo "package mocks" > mocks/mocks.go
 	go generate -mod=mod ./...
 
 .PHONY: test
@@ -63,7 +65,13 @@ gosec:
 
 .PHONY: trivy
 trivy:
-	trivy fs --scanners vuln,secret --quiet --no-progress --disable-telemetry --exit-code 1 .
+	trivy fs \
+	--db-repository ghcr.io/aquasecurity/trivy-db \
+	--scanners vuln,secret \
+	--quiet \
+	--no-progress \
+	--disable-telemetry \
+	--exit-code 1 .
 
 .PHONY: addlicense
 addlicense:

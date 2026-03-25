@@ -8,6 +8,10 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.12.12
+
+- fix: upgrade osv-scanner to v2.3.5 to fix broken replace directive
+
 ## v2.12.11
 
 - chore: verified all tests pass, linting succeeds, and precommit checks are clean

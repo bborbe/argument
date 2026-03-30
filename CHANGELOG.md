@@ -8,6 +8,13 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.12.13
+
+- Update bborbe/* dependencies (errors, time, collection, parse, validation)
+- Update golangci-lint to v2.11.4 with --allow-parallel-runners flag
+- Update go-modtool to v0.7.1
+- Update multiple indirect dependencies (docker, containerd, moby, opentelemetry)
+
 ## v2.12.12
 
 - fix: upgrade osv-scanner to v2.3.5 to fix broken replace directive

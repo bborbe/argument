@@ -8,6 +8,13 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.12.18
+
+- Update go version to 1.26.2
+- Update bborbe/time to v1.25.8
+- Update bborbe/collection, parse, validation to latest patch versions
+- Update counterfeiter to v6.12.2
+
 ## v2.12.17
 
 - update go dependencies

@@ -1,6 +1,6 @@
 module github.com/bborbe/argument/v2
 
-go 1.26.1
+go 1.26.2
 
 replace (
 	github.com/anthropics/anthropic-sdk-go => github.com/anthropics/anthropic-sdk-go v1.26.0
@@ -13,13 +13,13 @@ replace (
 
 require (
 	github.com/bborbe/errors v1.5.9
-	github.com/bborbe/time v1.25.6
+	github.com/bborbe/time v1.25.8
 	github.com/golangci/golangci-lint/v2 v2.11.4
 	github.com/google/addlicense v1.2.0
 	github.com/google/osv-scanner/v2 v2.3.5
 	github.com/incu6us/goimports-reviser/v3 v3.12.6
 	github.com/kisielk/errcheck v1.10.0
-	github.com/maxbrunsfeld/counterfeiter/v6 v6.12.1
+	github.com/maxbrunsfeld/counterfeiter/v6 v6.12.2
 	github.com/onsi/ginkgo/v2 v2.28.1
 	github.com/onsi/gomega v1.39.1
 	github.com/securego/gosec/v2 v2.25.0
@@ -90,11 +90,11 @@ require (
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/bazelbuild/buildtools v0.0.0-20250826111327-4006b543a694 // indirect
-	github.com/bborbe/collection v1.20.7 // indirect
+	github.com/bborbe/collection v1.20.8 // indirect
 	github.com/bborbe/math v1.3.5 // indirect
-	github.com/bborbe/parse v1.10.8 // indirect
+	github.com/bborbe/parse v1.10.9 // indirect
 	github.com/bborbe/run v1.9.8 // indirect
-	github.com/bborbe/validation v1.4.9 // indirect
+	github.com/bborbe/validation v1.4.10 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bkielbasa/cyclop v1.2.3 // indirect
 	github.com/blizzy78/varnamelen v0.8.0 // indirect

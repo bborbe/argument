@@ -8,6 +8,14 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.12.20
+
+- Update ginkgo/v2 to v2.28.2
+- Update gosec/v2 to v2.26.1
+- Update golang.org/x/vuln to v1.3.0
+- Update anthropic-sdk-go to v1.38.0, openai-go to v3.32.0, go.opentelemetry.io/otel to v1.41.0
+- Add new indirect deps: bahlo/generic-list-go, buger/jsonparser, invopop/jsonschema, mailru/easyjson, wk8/go-ordered-map
+
 ## v2.12.19
 
 - Update bborbe/errors to v1.5.10

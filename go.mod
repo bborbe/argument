@@ -12,7 +12,7 @@ replace (
 
 require (
 	github.com/bborbe/errors v1.5.11
-	github.com/bborbe/time v1.25.9
+	github.com/bborbe/time v1.25.10
 	github.com/golangci/golangci-lint/v2 v2.11.4
 	github.com/google/addlicense v1.2.0
 	github.com/google/osv-scanner/v2 v2.3.5
@@ -92,7 +92,7 @@ require (
 	github.com/bazelbuild/buildtools v0.0.0-20250826111327-4006b543a694 // indirect
 	github.com/bborbe/collection v1.20.11 // indirect
 	github.com/bborbe/math v1.3.9 // indirect
-	github.com/bborbe/parse v1.10.10 // indirect
+	github.com/bborbe/parse v1.10.11 // indirect
 	github.com/bborbe/run v1.9.23 // indirect
 	github.com/bborbe/sentry v1.9.16 // indirect
 	github.com/bborbe/validation v1.4.12 // indirect

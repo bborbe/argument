@@ -8,6 +8,11 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.12.25
+
+- downgrade golang.org/x/net v0.55.0 → v0.53.0
+- downgrade golang.org/x/text v0.37.0 → v0.36.0
+
 ## v2.12.24
 
 - fix: `Print` skips unexported struct fields to prevent reflect panic

@@ -17,6 +17,11 @@ func Print(ctx context.Context, data interface{}) error {
 	e := reflect.ValueOf(data).Elem()
 	t := e.Type()
 	for i := 0; i < e.NumField(); i++ {
+		// Skip unexported fields: reflect.Value.Interface() panics on them, and
+		// they are never argument targets (Parse only fills tagged exported fields).
+		if !t.Field(i).IsExported() {
+			continue
+		}
 		ef := e.Field(i)
 		argName := t.Field(i).Tag.Get("display")
 		if argName == "hidden" {

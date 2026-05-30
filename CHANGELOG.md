@@ -8,6 +8,10 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.12.23
+
+- fix: `Print` no longer panics on unexported struct fields — it skipped the export check and called `reflect.Value.Interface()` on every field, which panics on unexported fields. Now skips them (consistent with the tag-gated arg/env/default/validate loops, which already skip untagged fields)
+
 ## v2.12.22
 
 - bump go 1.26.2 → 1.26.3

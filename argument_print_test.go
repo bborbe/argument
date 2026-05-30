@@ -57,6 +57,33 @@ Argument: Float64PtrNil <nil>
 	})
 })
 
+var _ = Describe("Print with unexported fields", func() {
+	type app struct {
+		Username       string
+		triggerRunning int64 //nolint:unused // exercises unexported-field skip
+	}
+	var buf *bytes.Buffer
+	var args app
+	var ctx context.Context
+	BeforeEach(func() {
+		ctx = context.Background()
+		buf = &bytes.Buffer{}
+		log.SetOutput(buf)
+		log.SetFlags(0)
+		args = app{Username: "Ben", triggerRunning: 1}
+	})
+	It("does not panic on unexported fields", func() {
+		Expect(func() {
+			_ = argument.Print(ctx, &args)
+		}).NotTo(Panic())
+	})
+	It("skips unexported fields in output", func() {
+		err := argument.Print(ctx, &args)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(buf.String()).To(Equal("Argument: Username 'Ben'\n"))
+	})
+})
+
 var _ = Describe("Print with slices", func() {
 	type appWithSlices struct {
 		EmptySlice    []string

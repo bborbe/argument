@@ -8,6 +8,14 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.12.26
+
+- bump Masterminds/semver v3.5.0
+- bump bborbe/math, bborbe/run, getsentry/sentry-go
+- bump prometheus/common, prometheus/procfs
+- bump golang.org/x/{mod,net,text,tools}
+- drop go.yaml.in/yaml/v2 indirect dep
+
 ## v2.12.25
 
 - downgrade golang.org/x/net v0.55.0 → v0.53.0

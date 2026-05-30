@@ -8,6 +8,14 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.12.24
+
+- fix: `Print` skips unexported struct fields to prevent reflect panic
+- bump: bborbe/time v1.25.10 → v1.27.0, collection/parse/validation patch bumps
+- bump: onsi/ginkgo v2.28.3 → v2.29.0, gomega v1.40.0 → v1.41.0
+- bump: golang.org/x/net v0.53.0 → v0.55.0, sys and text bumps
+- chore: drop standalone errcheck/gosec, improve vulncheck with ignore list
+
 ## v2.12.23
 
 - fix: `Print` no longer panics on unexported struct fields — it skipped the export check and called `reflect.Value.Interface()` on every field, which panics on unexported fields. Now skips them (consistent with the tag-gated arg/env/default/validate loops, which already skip untagged fields)

@@ -8,6 +8,12 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v2.12.27
+
+- bump Go to 1.26.4
+- exclude cloud.google.com/go v0.26.0
+- add .maintainer.yaml for autoRelease/autoApprove
+
 ## v2.12.26
 
 - bump Masterminds/semver v3.5.0

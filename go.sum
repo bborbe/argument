@@ -2,8 +2,8 @@ github.com/Masterminds/semver/v3 v3.5.0 h1:kQceYJfbupGfZOKZQg0kou0DgAKhzDg2NZPAw
 github.com/Masterminds/semver/v3 v3.5.0/go.mod h1:4V+yj/TJE1HU9XfppCwVMZq3I84lprf4nC11bSS5beM=
 github.com/bborbe/collection v1.20.12 h1:FUiCMioYDmNlPidUQ26NbnN7D0JBsiZfHUVjvCdS+YU=
 github.com/bborbe/collection v1.20.12/go.mod h1:S+agk3S8rIFGh7/XstkM5jBdl/DMec2TxQRGoeYx+fc=
-github.com/bborbe/errors v1.5.13 h1:h2F5R6cL5R+DnUmwFEKziRTzcsKrLlhCrPbKwzfcBo4=
-github.com/bborbe/errors v1.5.13/go.mod h1:yRcmhOEgO6Htvibc63ALT1f1tNrBlWk7n5o6lZ8FOTQ=
+github.com/bborbe/errors v1.5.15 h1:GL/DpWlxkVcprneGM7xfTkhZNvzKXmdgNMtLDlAoK0Y=
+github.com/bborbe/errors v1.5.15/go.mod h1:bBTxWY1WGdpSN2MbB2uQQIoFCWjYz85UKVauzBadZRA=
 github.com/bborbe/math v1.3.10 h1:GCpiWyZFPe1OwaFzdA9q747XzBb4fZN4QBwW5Bbe/ys=
 github.com/bborbe/math v1.3.10/go.mod h1:Zd3DirqBKgNlnYZjeNizOIXrqr1qAbueAtXrZzNHe4s=
 github.com/bborbe/parse v1.10.12 h1:EmH7mC2UgHyc/spQnJ8KjUOk8MztN/i9Raa3KR5JdT8=

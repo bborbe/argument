@@ -3,7 +3,7 @@ module github.com/bborbe/argument/v2
 go 1.26.4
 
 require (
-	github.com/bborbe/errors v1.5.13
+	github.com/bborbe/errors v1.5.15
 	github.com/bborbe/time v1.27.1
 	github.com/onsi/ginkgo/v2 v2.32.0
 	github.com/onsi/gomega v1.42.1

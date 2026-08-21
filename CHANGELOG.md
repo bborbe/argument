@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## v2.12.36
 
+- chore: update Go to 1.27.0 and update dependencies
 - chore: Bump errcheck to v1.20.0 and golangci-lint to v2.13.1 for Go 1.27 support
 
 Please choose versions by [Semantic Versioning](http://semver.org/).

@@ -48,7 +48,7 @@ func handleCustomType(
 ) (bool, error) {
 	// Get the underlying type
 	underlyingType := ef.Type()
-	for underlyingType.Kind() == reflect.Ptr {
+	for underlyingType.Kind() == reflect.Pointer {
 		underlyingType = underlyingType.Elem()
 	}
 

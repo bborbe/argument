@@ -22,7 +22,7 @@ func handleCustomTypeValidation(
 ) (bool, error) {
 	// Get the underlying type
 	underlyingType := ef.Type()
-	for underlyingType.Kind() == reflect.Ptr {
+	for underlyingType.Kind() == reflect.Pointer {
 		underlyingType = underlyingType.Elem()
 	}
 
@@ -150,7 +150,7 @@ func validateRequiredField(ctx context.Context, tf reflect.StructField, ef refle
 		}
 	default:
 		// Handle pointers
-		if ef.Kind() == reflect.Ptr {
+		if ef.Kind() == reflect.Pointer {
 			if ef.IsNil() {
 				return createError()
 			}
@@ -286,7 +286,7 @@ func validateField(ctx context.Context, fieldName string, fieldValue reflect.Val
 	// For non-slice types, check if they implement HasValidation
 	if fieldValue.CanInterface() {
 		// Skip nil pointers to avoid panic when calling methods
-		if fieldValue.Kind() == reflect.Ptr && fieldValue.IsNil() {
+		if fieldValue.Kind() == reflect.Pointer && fieldValue.IsNil() {
 			return nil
 		}
 

@@ -47,7 +47,7 @@ func Print(ctx context.Context, data interface{}) error {
 				}
 				log.Printf("Argument: %s [%d]: %s", t.Field(i).Name, length, strings.Join(values, ", "))
 			}
-		} else if ef.Kind() == reflect.Ptr || ef.Kind() == reflect.Interface {
+		} else if ef.Kind() == reflect.Pointer || ef.Kind() == reflect.Interface {
 			if ef.IsZero() {
 				log.Printf("Argument: %s <nil>", t.Field(i).Name)
 			} else {

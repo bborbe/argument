@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+- chore: update Go to 1.27.0 and github.com/bborbe/errors to v1.5.20, github.com/bborbe/time to v1.27.10, github.com/onsi/ginkgo/v2 to v2.32.1
+
 ## v2.12.36
 
 - chore: Bump errcheck to v1.20.0 and golangci-lint to v2.13.1 for Go 1.27 support

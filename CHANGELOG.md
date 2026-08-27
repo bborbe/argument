@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## v2.13.0
 
 - feat: opt into `autoMerge.trivial` for mechanically-trivial update PRs
 

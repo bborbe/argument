@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 - chore: update github.com/bborbe/errors to v1.5.21
 
+## v2.13.0
+
+- feat: opt into `autoMerge.trivial` for mechanically-trivial update PRs
+
 ## v2.12.37
 
 - chore: update Go to 1.27.0 and github.com/bborbe/errors to v1.5.20, github.com/bborbe/time to v1.27.10, github.com/onsi/ginkgo/v2 to v2.32.1

@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+- chore: update github.com/bborbe/errors to v1.5.21
+
 ## v2.13.0
 
 - feat: opt into `autoMerge.trivial` for mechanically-trivial update PRs

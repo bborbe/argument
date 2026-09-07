@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+- chore: update Go to 1.27.1
+
 ## v2.13.2
 
 - chore: update github.com/bborbe/errors to v1.6.0, github.com/bborbe/time to v1.27.11

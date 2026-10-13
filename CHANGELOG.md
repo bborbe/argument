@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## v2.13.6
 
 - chore: update github.com/bborbe/errors to v1.6.3, github.com/bborbe/time to v1.27.16, github.com/onsi/gomega to v1.44.0
 

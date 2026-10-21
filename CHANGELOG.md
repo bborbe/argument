@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## v2.13.7
 
 - chore: update Go to 1.27.3 and github.com/bborbe/time to v1.27.18, github.com/onsi/ginkgo/v2 to v2.33.1
 

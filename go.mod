@@ -3,7 +3,7 @@ module github.com/bborbe/argument/v2
 go 1.27.3
 
 require (
-	github.com/bborbe/errors v1.6.3
+	github.com/bborbe/errors v1.6.4
 	github.com/bborbe/time v1.27.18
 	github.com/onsi/ginkgo/v2 v2.33.1
 	github.com/onsi/gomega v1.44.0
@@ -12,10 +12,10 @@ require (
 require (
 	github.com/Masterminds/semver/v3 v3.5.0 // indirect
 	github.com/bborbe/collection v1.21.3 // indirect
-	github.com/bborbe/math v1.4.15 // indirect
+	github.com/bborbe/math v1.4.16 // indirect
 	github.com/bborbe/parse v1.12.4 // indirect
-	github.com/bborbe/run v1.11.2 // indirect
-	github.com/bborbe/validation v1.5.5 // indirect
+	github.com/bborbe/run v1.11.3 // indirect
+	github.com/bborbe/validation v1.5.6 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/getsentry/sentry-go v0.50.0 // indirect

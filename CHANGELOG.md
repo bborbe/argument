@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## v2.13.10
 
 - chore: update github.com/bborbe/errors to v1.6.6, github.com/bborbe/time to v1.27.26, github.com/onsi/ginkgo/v2 to v2.34.0
 

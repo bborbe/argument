@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+- chore: update github.com/bborbe/errors to v1.6.6, github.com/bborbe/time to v1.27.26, github.com/onsi/ginkgo/v2 to v2.34.0
+
 ## v2.13.9
 
 - chore: bump golang.org/x/net to v0.62.0 (CVE-2026-97045)

@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## v2.13.11
 
 - chore: update Go to 1.27.4 and github.com/bborbe/time to v1.27.28
 

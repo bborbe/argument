@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+- chore: remove 8 stale vulnerability ignores (withdrawn advisory, module absent from go.mod, or version outside the affected range)
+- chore: install Trivy from a pinned release tarball in CI so the job no longer depends on the retired apt-key helper
+
 ## v2.13.11
 
 - chore: update Go to 1.27.4 and github.com/bborbe/time to v1.27.28

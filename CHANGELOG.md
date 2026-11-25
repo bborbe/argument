@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+- chore: remove orphaned section comments left in `.trivyignore` by the stale-ignore sweep
+
 ## v2.13.12
 
 - chore: remove 8 stale vulnerability ignores (withdrawn advisory, module absent from go.mod, or version outside the affected range)

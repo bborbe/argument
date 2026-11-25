@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## v2.13.13
 
 - chore: remove orphaned section comments left in `.trivyignore` by the stale-ignore sweep
 
